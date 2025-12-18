@@ -1,0 +1,33 @@
+{
+    "DHT1": {
+        "simulated": true,
+        "pin": 5
+    },
+    "DS1": {
+        "simulated": true,
+        "pin": 5,
+        "delay": 5
+    },
+    "DL": {
+        "simulated": false,
+        "pin": 7
+    }, 
+    "DUS1": {
+        "simulated": true,
+        "pin": 9,
+        "delay": 5
+    },
+    "DB": {
+        "simulated": false,
+        "pin": 11
+    },
+    "DPIR1": {
+        "simulated": true,
+        "pin": 13,
+        "delay": 3
+    },
+    "DMS": {
+        "simulated": false,
+        "pin": 15
+    } 
+}
