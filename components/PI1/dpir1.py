@@ -16,7 +16,7 @@ def dpir1_callback(state, code):
 def run_dpir1(settings, threads, stop_event):
         if settings['simulated']:
             print("Starting dpir1 simulator")
-            ds1_thread = threading.Thread(target = run_dpir1_simulator, args=(settings["delay"], dpir1_callback, stop_event))
+            ds1_thread = threading.Thread(target = run_dpir1_simulator, args=(settings["delay"], dpir1_callback, stop_event), daemon=True)
             ds1_thread.start()
             threads.append(ds1_thread)
             print("Dpir1 simulator started")

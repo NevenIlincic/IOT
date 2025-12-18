@@ -17,7 +17,7 @@ def dus1_callback(distance, code):
 def run_dus1(settings, threads, stop_event):
         if settings['simulated']:
             print("Starting dus1 simulator")
-            dus1_thread = threading.Thread(target = run_dus1_simulator, args=(settings["delay"], dus1_callback, stop_event))
+            dus1_thread = threading.Thread(target = run_dus1_simulator, args=(settings["delay"], dus1_callback, stop_event), daemon=True)
             dus1_thread.start()
             threads.append(dus1_thread)
             print("Dus1 simulator started")
