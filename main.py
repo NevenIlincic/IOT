@@ -1,6 +1,20 @@
 
 import threading
 from settings import load_settings
+
+settings = load_settings()
+
+smart_print_enabled = settings['PRINT']['activated']
+if smart_print_enabled:
+    try:
+        import builtins
+        from prompt_toolkit import print_formatted_text as safe_print
+        builtins.print = safe_print
+        print("Smart print is ENABLED")
+    except ImportError:
+        print("Warning: prompt_toolkit not found. Falling back to standard print.")
+        smart_print_enabled = False
+
 from components.dht import run_dht
 from components.PI1.ds1 import run_ds1
 from components.PI1.dus1 import run_dus1
@@ -17,10 +31,10 @@ try:
 except:
     pass
 
-
+#treba pip install prompt_toolkit prvo i virtuelno okruzenje da se instalira na RaspberryPI
 if __name__ == "__main__":
     print('Starting app')
-    settings = load_settings()
+    #settings = load_settings()
     threads = []
     stop_event = threading.Event()
     try:
@@ -46,6 +60,5 @@ if __name__ == "__main__":
 
 
     except KeyboardInterrupt:
-        print('Stopping app')
         for t in threads:
             stop_event.set()
