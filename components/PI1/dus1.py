@@ -1,15 +1,17 @@
-
 from simulators.PI1.dus1 import run_dus1_simulator
 import threading
 import time
+from colorama import init
+
+init(autoreset=True)
 
 def dus1_callback(distance, code):
     t = time.localtime()
     s = "="*20
-    s += "\nDevice: Door Ultra Sonic Sensor 1\n"
+    s += "\n\033[1;35mDevice: Door Ultra Sonic Sensor 1\033[0m\n"
     s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
     s += f"Code: {code}\n"
-    s += f"Distance: {distance}cm"
+    s += f"Distance: \033[1m{distance}cm\033[0m"
     print(s)
 
 

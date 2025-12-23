@@ -1,15 +1,17 @@
-
 from simulators.PI1.ds1 import run_ds1_simulator
 import threading
 import time
+from colorama import init
+
+init(autoreset=True)
 
 def ds1_callback(state, code):
     t = time.localtime()
     s = "="*20
-    s +=  "\nDevice: Door Sensor 1\n"
+    s +=  "\n\033[1;34mDevice: Door Sensor 1\033[0m\n"
     s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
     s += f"Code: {code}\n"
-    s += f"State: {state.name}"
+    s += f"State: \033[1m{state.name}\033[0m"
     print(s)
 
 

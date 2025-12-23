@@ -1,15 +1,17 @@
-
 from simulators.PI1.dpir1 import run_dpir1_simulator
 import threading
 import time
+from colorama import init
+
+init(autoreset=True)
 
 def dpir1_callback(state, code):
     t = time.localtime()
     s = "="*20
-    s +=  "\nDevice: Door Motion Sensor 1\n"
+    s +=  "\n\033[1;32mDevice: Door Motion Sensor 1\033[0m\n"
     s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
     s += f"Code: {code}\n"
-    s += f"Motion: {state.name}"
+    s += f"Motion: \033[1m{state.name}\033[0m"
     print(s)
 
 

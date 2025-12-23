@@ -1,6 +1,8 @@
-
 import threading
 from settings import load_settings
+from colorama import init
+
+init(autoreset=True)
 
 settings = load_settings()
 

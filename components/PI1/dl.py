@@ -1,14 +1,17 @@
 import time
 import threading
 from simulators.PI1.dl import run_dl_simulator
+from colorama import init
+
+init(autoreset=True)
 
 def dl1_callback(state, code):
     t = time.localtime()
     s = "="*20
-    s +=  "\nDevice: Door Light 1\n"
+    s +=  "\n\033[1;31mDevice: Door Light 1\033[0m\n"
     s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
     s += f"Code: {code}\n"
-    s += f"State: {state.name}"
+    s += f"State: \033[1m{state.name}\033[0m"
     print(s)
 
 
