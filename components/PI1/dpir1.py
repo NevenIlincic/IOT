@@ -13,18 +13,18 @@ def dpir1_callback(state, code):
     print(s)
 
 
-def run_dpir1(settings, threads, stop_event):
-        if settings['simulated']:
-            print("Starting dpir1 simulator")
-            ds1_thread = threading.Thread(target = run_dpir1_simulator, args=(settings["delay"], dpir1_callback, stop_event), daemon=True)
-            ds1_thread.start()
-            threads.append(ds1_thread)
-            print("Dpir1 simulator started")
-        # else:
-        #     from sensors.dht import run_dht_loop, DHT
-        #     print("Starting dpir1 loop")
-        #     dht = DHT(settings['pin'])
-        #     ds1_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, dpir1_callback, stop_event))
-        #     ds1_thread.start()
-        #     threads.append(ds1_thread)
-        #     print("Dpir loop started")
+def run_dpir1(mqtt_client, settings, threads, stop_event):
+    if settings['simulated']:
+        print("Starting dpir1 simulator")
+        ds1_thread = threading.Thread(target = run_dpir1_simulator, args=(mqtt_client, settings, dpir1_callback, stop_event), daemon=True)
+        ds1_thread.start()
+        threads.append(ds1_thread)
+        print("Dpir1 simulator started")
+    # else:
+    #     from sensors.dht import run_dht_loop, DHT
+    #     print("Starting dpir1 loop")
+    #     dht = DHT(settings['pin'])
+    #     ds1_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, dpir1_callback, stop_event))
+    #     ds1_thread.start()
+    #     threads.append(ds1_thread)
+    #     print("Dpir loop started")

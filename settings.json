@@ -1,4 +1,9 @@
 {
+    "PI":{
+        "id": 1,
+        "name": "neki_naziv"
+    },
+
     "PRINT":{
         "activated": true
     },
@@ -28,7 +33,9 @@
     "DPIR1": {
         "simulated": true,
         "pin": 13,
-        "delay": 3
+        "delay": 3,
+        "topic": "test/",
+        "name": "dpir1"
     },
     "DMS": {
         "simulated": true,

@@ -1,6 +1,7 @@
 
 import threading
 from settings import load_settings
+import paho.mqtt.client as mqtt
 
 settings = load_settings()
 
@@ -38,6 +39,11 @@ if __name__ == "__main__":
     threads = []
     stop_event = threading.Event()
     try:
+        
+        mqtt_client = mqtt.Client()
+        mqtt_client.connect("localhost", 1883, 60)
+        mqtt_client.loop_start()
+        
         # dht1_settings = settings['DHT1']
         ds1_settings = settings['DS1']
         dus1_settings = settings['DUS1']
@@ -47,7 +53,7 @@ if __name__ == "__main__":
         # run_dht(dht1_settings, threads, stop_event)
         run_ds1(ds1_settings, threads, stop_event)
         run_dus1(dus1_settings, threads, stop_event)
-        run_dpir1(dpir1_settings, threads, stop_event)
+        run_dpir1(mqtt_client, dpir1_settings, threads, stop_event)
         run_dl1(dl1_settings, threads, stop_event)
         run_dms(dms_settings, threads, stop_event)
         
@@ -56,9 +62,12 @@ if __name__ == "__main__":
         threads.append(cli_thread)
 
         while not stop_event.is_set():
+            
             time.sleep(0.5)
 
 
     except KeyboardInterrupt:
+        mqtt_client.loop_stop()
+        mqtt_client.disconnect()
         for t in threads:
             stop_event.set()
