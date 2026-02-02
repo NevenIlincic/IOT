@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+
+  # mqtt5 eclipse-mosquitto
+  mqtt5:
+    image: eclipse-mosquitto
+    container_name: mqtt5
+    ports:
+      - "1883:1883" #default mqtt port
+      - "9001:9001" #default mqtt port for websockets
+    volumes:
+      - ./MQTT/Config:/mosquitto/config:rw
+      - ./MQTT/data:/mosquitto/data:rw
+      - ./MQTT/log:/mosquitto/log:rw
+    networks:
+      - mqtt5-network
+
+  influxdb_iot:             # 1. Naziv servisa unutar YAML-a
+    image: influxdb
+    container_name: influxdb_iot_container  # 2. Jedinstveno ime kontejnera
+    ports:
+      - "8087:8086"         # 3. PROMENA PORTA: Mapiramo 8087 (tvoj PC) na 8086 (unutar kontejnera)
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
+      - DOCKER_INFLUXDB_INIT_ORG=moja_org
+      - DOCKER_INFLUXDB_INIT_BUCKET=moj_bucket
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-token
+    volumes:
+      - ./influxdb_iot/data:/var/lib/influxdb2:rw  # 4. Druga putanja za podatke
+    networks:
+      - mqtt5-network
+
+# volumes for mapping data,config and log
+volumes:
+  config:
+  data:
+  log:
+  influxdb:
+
+networks:
+  mqtt5-network:
+    name: mqtt5-network

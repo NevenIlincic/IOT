@@ -1,5 +1,5 @@
 
-from simulators.PI1.dpir1 import run_dpir1_simulator
+from simulators.dpir1 import run_dpir1_simulator
 import threading
 import time
 

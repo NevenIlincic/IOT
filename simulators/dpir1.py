@@ -45,7 +45,7 @@ def run_dpir1_simulator(mqtt_client, settings, callback, stop_event):
 def run_batch_thread(mqtt_client, settings, batch, data_lock, stop_event ):
     data_to_send = []
     while not stop_event.is_set():
-        time.sleep(5)
+        time.sleep(10)
         
         with data_lock:
             data_to_send = list(batch)

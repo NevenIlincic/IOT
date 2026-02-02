@@ -51,15 +51,16 @@ if __name__ == "__main__":
         dl1_settings = settings['DL']
         dms_settings = settings['DMS']
         # run_dht(dht1_settings, threads, stop_event)
-        run_ds1(ds1_settings, threads, stop_event)
-        run_dus1(dus1_settings, threads, stop_event)
-        run_dpir1(mqtt_client, dpir1_settings, threads, stop_event)
-        run_dl1(dl1_settings, threads, stop_event)
-        run_dms(dms_settings, threads, stop_event)
         
-        cli_thread = threading.Thread(target = run_cli, args=(settings, stop_event), daemon=True)
-        cli_thread.start()
-        threads.append(cli_thread)
+        run_ds1(mqtt_client, ds1_settings, threads, stop_event)
+        run_dus1(mqtt_client, dus1_settings, threads, stop_event)
+        run_dpir1(mqtt_client, dpir1_settings, threads, stop_event)
+        # run_dl1(dl1_settings, threads, stop_event)
+        # run_dms(dms_settings, threads, stop_event)
+        
+        # cli_thread = threading.Thread(target = run_cli, args=(settings, stop_event), daemon=True)
+        # cli_thread.start()
+        # threads.append(cli_thread)
 
         while not stop_event.is_set():
             

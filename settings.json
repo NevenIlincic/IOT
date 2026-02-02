@@ -14,7 +14,9 @@
     "DS1": {
         "simulated": true,
         "pin": 5,
-        "delay": 5
+        "delay": 5,
+        "name": "ds1",
+        "topic": "device/ds"
     },
     "DL": {
         "simulated": true,
@@ -24,7 +26,9 @@
     "DUS1": {
         "simulated": true,
         "pin": 9,
-        "delay": 5
+        "delay": 5,
+        "name": "dus1",
+        "topic": "device/dus"
     },
     "DB": {
         "simulated": true,
@@ -34,7 +38,7 @@
         "simulated": true,
         "pin": 13,
         "delay": 3,
-        "topic": "test/",
+        "topic": "device/dpir",
         "name": "dpir1"
     },
     "DMS": {

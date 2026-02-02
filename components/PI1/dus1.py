@@ -1,7 +1,8 @@
 
-from simulators.PI1.dus1 import run_dus1_simulator
+from simulators.dus1 import run_dus1_simulator
 import threading
 import time
+import json
 
 def dus1_callback(distance, code):
     t = time.localtime()
@@ -14,10 +15,10 @@ def dus1_callback(distance, code):
 
 
 
-def run_dus1(settings, threads, stop_event):
+def run_dus1(mqtt_client, settings, threads, stop_event):
         if settings['simulated']:
             print("Starting dus1 simulator")
-            dus1_thread = threading.Thread(target = run_dus1_simulator, args=(settings["delay"], dus1_callback, stop_event), daemon=True)
+            dus1_thread = threading.Thread(target = run_dus1_simulator, args=(mqtt_client, settings, dus1_callback, stop_event), daemon=True)
             dus1_thread.start()
             threads.append(dus1_thread)
             print("Dus1 simulator started")

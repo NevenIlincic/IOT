@@ -1,5 +1,5 @@
 
-from simulators.PI1.ds1 import run_ds1_simulator
+from simulators.ds1 import run_ds1_simulator
 import threading
 import time
 
@@ -13,10 +13,10 @@ def ds1_callback(state, code):
     print(s)
 
 
-def run_ds1(settings, threads, stop_event):
+def run_ds1(mqtt_client, settings, threads, stop_event):
         if settings['simulated']:
             print("Starting ds1 simulator")
-            ds1_thread = threading.Thread(target = run_ds1_simulator, args=(settings["delay"], ds1_callback, stop_event), daemon=True)
+            ds1_thread = threading.Thread(target = run_ds1_simulator, args=(mqtt_client, settings, ds1_callback, stop_event), daemon=True)
             ds1_thread.start()
             threads.append(ds1_thread)
             print("Ds1 simulator started")

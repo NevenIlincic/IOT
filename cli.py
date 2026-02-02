@@ -1,6 +1,6 @@
 import time
-from simulators.PI1.dl import toggle_light
-from simulators.PI1.dms import toggle_locked
+from simulators.dl import toggle_light
+from simulators.dms import toggle_locked
 import threading
 
 def buzz_worker():

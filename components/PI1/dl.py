@@ -1,6 +1,6 @@
 import time
 import threading
-from simulators.PI1.dl import run_dl_simulator
+from simulators.dl import run_dl_simulator
 
 def dl1_callback(state, code):
     t = time.localtime()

@@ -1,6 +1,6 @@
 import time
 import threading
-from simulators.PI1.dms import run_dms_simulator
+from simulators.dms import run_dms_simulator
 
 def dms_callback(locked, code):
     t = time.localtime()
