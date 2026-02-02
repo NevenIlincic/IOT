@@ -1,14 +1,11 @@
 import time
 from simulators.dl import toggle_light
 from simulators.dms import toggle_locked
+from simulators.db import toggle_buzzer
 import threading
 
-def buzz_worker():
-    print("Buzzing...")
-    time.sleep(2)
-    print("Stopped buzzing!")
 
-def run_cli(settings, stop_event):
+def run_cli(mqtt_client, settings, stop_event):
     dms_settings = settings['DMS']
     
     session = None
@@ -32,19 +29,18 @@ def run_cli(settings, stop_event):
                 stop_event.set()
             
             elif command == "dl":
-                print(toggle_light())
+                toggle_light(mqtt_client, settings["DL"])
                     
             elif command == "db":
-                buzzer_thread = threading.Thread(target=buzz_worker, daemon=True)
-                buzzer_thread.start()
+                toggle_buzzer(mqtt_client, settings["DB"])
                 
             elif command.startswith("dms"):
                 arguments = command.split(" ")
                 if len(arguments) >= 2:
                     try:
                         typed_password = int(arguments[1])
-                        dms_settings, message = toggle_locked(dms_settings, typed_password )
-                        print(message)
+                        toggle_locked(mqtt_client, dms_settings, typed_password)
+                    
                     except:
                         print("Must be integer!")
                 else:

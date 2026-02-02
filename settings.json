@@ -21,7 +21,9 @@
     "DL": {
         "simulated": true,
         "pin": 7,
-        "delay": 5
+        "delay": 5,
+        "name": "DL",
+        "topic": "device/dl"
     }, 
     "DUS1": {
         "simulated": true,
@@ -32,7 +34,9 @@
     },
     "DB": {
         "simulated": true,
-        "pin": 11
+        "pin": 11,
+        "name": "db1",
+        "topic": "device/db"
     },
     "DPIR1": {
         "simulated": true,
@@ -46,6 +50,8 @@
         "pin": 15,
         "password": 1234,
         "locked": true,
-        "delay": 7
+        "delay": 7,
+        "name": "dms1",
+        "topic": "device/dms"
     } 
 }

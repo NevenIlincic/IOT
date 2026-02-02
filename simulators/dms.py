@@ -1,14 +1,16 @@
 import time
 import random
 from enum import Enum
+import json
 
 
-class DoorMotion(Enum):
-    ON = 1
-    OFF = 0
+class Attempt(Enum):
+    SUCCESS = 1
+    FAIL = 0
 
-def toggle_locked(settings, password):
+def toggle_locked(mqtt_client, settings, password):
     string_to_return = ""
+    success = Attempt.SUCCESS
     if settings["password"] == password:
         settings['locked'] = not settings['locked']
         if settings['locked']:
@@ -16,9 +18,21 @@ def toggle_locked(settings, password):
         else:
             string_to_return = "Door Unlocked!"
     else:
+        success = Attempt.FAIL
         string_to_return = "Wrong password!"
         
-    return settings, string_to_return
+    value = "LOCKED" if settings["locked"] else "UNLOCKED"
+    
+    data_to_send = {
+                    "name": settings["name"],
+                    "value": value,
+                    "attempt": success.name,
+                    "simulated": True,
+                    "timestamp": time.time()
+                } 
+    print(value)
+    mqtt_client.publish(settings["topic"], json.dumps(data_to_send))
+    # return settings, string_to_return
 
 def generate_values(settings):
     while True:

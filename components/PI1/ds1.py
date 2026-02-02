@@ -10,7 +10,7 @@ def ds1_callback(state, code):
     s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
     s += f"Code: {code}\n"
     s += f"State: {state.name}"
-    print(s)
+    # print(s)
 
 
 def run_ds1(mqtt_client, settings, threads, stop_event):

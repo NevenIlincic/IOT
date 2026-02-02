@@ -11,7 +11,7 @@ def dus1_callback(distance, code):
     s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
     s += f"Code: {code}\n"
     s += f"Distance: {distance}cm"
-    print(s)
+    # print(s)
 
 
 

@@ -10,7 +10,7 @@ def dpir1_callback(state, code):
     s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
     s += f"Code: {code}\n"
     s += f"Motion: {state.name}"
-    print(s)
+    # print(s)
 
 
 def run_dpir1(mqtt_client, settings, threads, stop_event):

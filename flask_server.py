@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from settings import load_settings
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client.client.write_api import WritePrecision
 
 import paho.mqtt.client as mqtt
 
@@ -26,7 +27,7 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+msg.payload.decode("utf-8"))
     topic = msg.topic
     payload = json.loads(msg.payload.decode("utf-8"))
-    match msg.topic:
+    match topic:
         case "device/dpir":
             for single_data in payload:
                 add_point("DPIR", single_data)
@@ -37,7 +38,24 @@ def on_message(client, userdata, msg):
         case "device/ds":
             for single_data in payload:
                 add_point("DS", single_data)
+                
+        case "device/dl":
+            add_point("DL", payload)
+        
+        case "device/dms":
+                measurment_time = datetime.fromtimestamp(payload['timestamp'], tz=timezone.utc)
+                point = Point("DMS") \
+                .tag("name", payload["name"]) \
+                .field("simulated", payload["simulated"]) \
+                .field("value", payload["value"])\
+                .field("attempt", payload["attempt"])\
+                .time(measurment_time)
+            
+                write_api.write(bucket="moj_bucket", record=point, org="moja_org")
 
+        case "device/db":
+            for single_data in payload:
+                add_point("DB", single_data)
 
 def add_point(measurment_name, data):
     measurment_time = datetime.fromtimestamp(data['timestamp'], tz=timezone.utc)
@@ -45,7 +63,7 @@ def add_point(measurment_name, data):
     .tag("name", data["name"]) \
     .field("simulated", data["simulated"]) \
     .field("value", data["value"])\
-    .time(measurment_time)
+    .time(measurment_time, WritePrecision.NS)
     
     write_api.write(bucket="moj_bucket", record=point, org="moja_org")
 
