@@ -13,7 +13,7 @@ services:
       - ./MQTT/data:/mosquitto/data:rw
       - ./MQTT/log:/mosquitto/log:rw
     networks:
-      - mqtt5-network
+      - iot-network
 
   influxdb_iot:             # 1. Naziv servisa unutar YAML-a
     image: influxdb
@@ -22,15 +22,29 @@ services:
       - "8087:8086"         # 3. PROMENA PORTA: Mapiramo 8087 (tvoj PC) na 8086 (unutar kontejnera)
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
-      - DOCKER_INFLUXDB_INIT_ORG=moja_org
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_ADMIN_USER}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
       - DOCKER_INFLUXDB_INIT_BUCKET=moj_bucket
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-token
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
     volumes:
       - ./influxdb_iot/data:/var/lib/influxdb2:rw  # 4. Druga putanja za podatke
     networks:
-      - mqtt5-network
+      - iot-network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana:/var/lib/grafana
+    depends_on:
+      - influxdb_iot
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    networks:
+      - iot-network
 
 # volumes for mapping data,config and log
 volumes:
@@ -38,7 +52,8 @@ volumes:
   data:
   log:
   influxdb:
+  grafana:
 
 networks:
-  mqtt5-network:
-    name: mqtt5-network
+  iot-network:
+    name: iot-network
