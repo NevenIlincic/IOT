@@ -11,36 +11,25 @@ class DoorLightState(Enum):
 
 state = DoorLightState.OFF
 
-def toggle_light(mqtt_client, settings):
+def toggle_light():
     global state
-    string_to_return = ""
-    if state == DoorLightState.OFF:
-        state = DoorLightState.ON
-        string_to_return = "Light ON!"
-    else:
-        state = DoorLightState.OFF
-        string_to_return = "Light OFF!"
-    
-    data_to_send = {
-                "name": settings["name"],
-                "value": string_to_return,
-                "simulated": True,
-                "timestamp": time.time()
-            }
-    
-    print(string_to_return)
-    mqtt_client.publish(settings["topic"], json.dumps(data_to_send))
-    # return string_to_return
+    state = DoorLightState.ON
+    print("Light ON!")
+    time.sleep(10)
+    state = DoorLightState.OFF
+    print("Light OFF!")
 
+    
+    
 def generate_values():
     while True:
         yield state
       
 
-def run_dl_simulator(delay, callback, stop_event):
+def run_dl_simulator(settings, data_lock, batch, stop_event, callback):
     for state in generate_values():
-        callback(state, "simulated")
-        time.sleep(delay)  # Delay between readings (adjust as needed)
+        callback(settings, data_lock, batch, stop_event, state.name)
+        time.sleep(settings["delay"])  # Delay between readings (adjust as needed)
         if stop_event.is_set():
             break
-              
+    

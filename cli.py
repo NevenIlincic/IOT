@@ -5,7 +5,7 @@ from simulators.db import toggle_buzzer
 import threading
 
 
-def run_cli(mqtt_client, settings, stop_event):
+def run_cli(mqtt_client, settings, stop_event, db, dl):
     dms_settings = settings['DMS']
     
     session = None
@@ -29,10 +29,16 @@ def run_cli(mqtt_client, settings, stop_event):
                 stop_event.set()
             
             elif command == "dl":
-                toggle_light(mqtt_client, settings["DL"])
+                if settings["DL"]["simulated"]:
+                    toggle_light()
+                else:
+                    dl.toggle_light()
                     
             elif command == "db":
-                toggle_buzzer(mqtt_client, settings["DB"])
+                if settings["DB"]["simulated"]:
+                    toggle_buzzer()
+                else:
+                    db.toggle_buzz()
                 
             elif command.startswith("dms"):
                 arguments = command.split(" ")

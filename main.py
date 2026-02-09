@@ -2,6 +2,7 @@
 import threading
 from settings import load_settings
 import paho.mqtt.client as mqtt
+import json
 
 settings = load_settings()
 
@@ -17,11 +18,15 @@ if smart_print_enabled:
         smart_print_enabled = False
 
 from components.dht import run_dht
-from components.PI1.ds1 import run_ds1
-from components.PI1.dus1 import run_dus1
-from components.PI1.dpir1 import run_dpir1
-from components.PI1.dl import run_dl1
-from components.PI1.dms import run_dms
+from components.ds1 import run_ds
+from components.dus1 import run_dus1
+from components.dpir1 import run_dpir1
+from components.dl import run_dl
+from components.dms import run_dms
+from components.db import run_db
+
+from sensors.db import DB
+from sensors.dl import DL
 
 from cli import run_cli
 import time
@@ -32,9 +37,28 @@ try:
 except:
     pass
 
+
+def fill_batch(mqtt_client, batch, data_lock, settings):
+    data_to_send = []
+    while not stop_event.is_set():
+        time.sleep(2)
+        with data_lock:
+            data_to_send = list(batch)
+            batch.clear()
+        
+        if data_to_send:
+            mqtt_client.publish(settings["topic"], json.dumps(data_to_send))
+    
+    with data_lock:
+        if batch:
+            mqtt_client.publish(settings["topic"], json.dumps(data_to_send))
+            
+
 #treba pip install prompt_toolkit prvo i virtuelno okruzenje da se instalira na RaspberryPI
 if __name__ == "__main__":
     print('Starting app')
+    batch = []
+    data_lock = threading.Lock()
     #settings = load_settings()
     threads = []
     stop_event = threading.Event()
@@ -48,22 +72,32 @@ if __name__ == "__main__":
         ds1_settings = settings['DS1']
         dus1_settings = settings['DUS1']
         dpir1_settings = settings['DPIR1']
-        dl1_settings = settings['DL']
+        dl_settings = settings['DL']
         dms_settings = settings['DMS']
+        db_settings = settings["DB"]
         # run_dht(dht1_settings, threads, stop_event)
         
-        run_ds1(mqtt_client, ds1_settings, threads, stop_event)
-        run_dus1(mqtt_client, dus1_settings, threads, stop_event)
-        run_dpir1(mqtt_client, dpir1_settings, threads, stop_event)
+        db = DB(db_settings, batch)
+        dl = DL(dl_settings, batch)
+        
+        run_ds(ds1_settings, batch, data_lock, threads, stop_event)
+        # run_dus1(mqtt_client, dus1_settings, threads, stop_event)
+        # run_dpir1(mqtt_client, dpir1_settings, threads, stop_event)
+        run_db(db, db_settings, batch, data_lock, threads, stop_event)
+        run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
+        
+        batch_thread =  threading.Thread(target=fill_batch, args=(mqtt_client, batch, data_lock, settings))
+        batch_thread.start()
+        threads.append(batch_thread)
+        
         # run_dl1(dl1_settings, threads, stop_event)
         # run_dms(dms_settings, threads, stop_event)
         
-        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client, settings, stop_event), daemon=True)
+        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client, settings, stop_event, db, dl), daemon=True)
         cli_thread.start()
         threads.append(cli_thread)
 
         while not stop_event.is_set():
-            
             time.sleep(0.5)
 
 

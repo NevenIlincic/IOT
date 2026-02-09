@@ -21,40 +21,40 @@ influx_config = {
 }
 
 def on_connect(client, userdata, flags, rc):
-    client.subscribe("device/+")
+    client.subscribe("devices")
 
 def on_message(client, userdata, msg):
     print(msg.topic+" "+msg.payload.decode("utf-8"))
     topic = msg.topic
     payload = json.loads(msg.payload.decode("utf-8"))
-    match topic:
-        case "device/dpir":
-            for single_data in payload:
+    
+    for single_data in payload:
+        name = single_data["name"]
+        
+        match name:
+            case "dpir":
                 add_point("DPIR", single_data)
-        
-        case "device/dus":
-            for single_data in payload:
+            
+            case "dus":
                 add_point("DUS", single_data)
-        case "device/ds":
-            for single_data in payload:
+            case "ds":
                 add_point("DS", single_data)
-                
-        case "device/dl":
-            add_point("DL", payload)
-        
-        case "device/dms":
-                measurment_time = datetime.fromtimestamp(payload['timestamp'], tz=timezone.utc)
+                    
+            case "dl":
+                add_point("DL", single_data)
+            
+            case "dms":
+                measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
                 point = Point("DMS") \
-                .tag("name", payload["name"]) \
-                .field("simulated", payload["simulated"]) \
-                .field("value", payload["value"])\
-                .field("attempt", payload["attempt"])\
+                .tag("name", single_data["name"]) \
+                .field("simulated", single_data["simulated"]) \
+                .field("value", single_data["value"])\
+                .field("attempt", single_data["attempt"])\
                 .time(measurment_time)
             
                 write_api.write(bucket="moj_bucket", record=point, org="moja_org")
 
-        case "device/db":
-            for single_data in payload:
+            case "db":
                 add_point("DB", single_data)
 
 def add_point(measurment_name, data):

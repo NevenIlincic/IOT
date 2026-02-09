@@ -1,4 +1,5 @@
 {
+    "topic": "devices",
     "PI":{
         "id": 1,
         "name": "neki_naziv"
@@ -11,31 +12,31 @@
         "simulated": true,
         "pin": 5
     },
-    "DS1": {
+    "DS": {
         "simulated": true,
-        "pin": 5,
+        "pin": 17,
         "delay": 5,
-        "name": "ds1",
+        "name": "ds",
         "topic": "device/ds"
     },
     "DL": {
         "simulated": true,
         "pin": 7,
         "delay": 5,
-        "name": "DL",
+        "name": "dl",
         "topic": "device/dl"
     }, 
     "DUS1": {
         "simulated": true,
         "pin": 9,
         "delay": 5,
-        "name": "dus1",
+        "name": "dus",
         "topic": "device/dus"
     },
     "DB": {
         "simulated": true,
         "pin": 11,
-        "name": "db1",
+        "name": "db",
         "topic": "device/db"
     },
     "DPIR1": {
@@ -43,7 +44,7 @@
         "pin": 13,
         "delay": 3,
         "topic": "device/dpir",
-        "name": "dpir1"
+        "name": "dpir"
     },
     "DMS": {
         "simulated": true,
@@ -51,7 +52,7 @@
         "password": 1234,
         "locked": true,
         "delay": 7,
-        "name": "dms1",
+        "name": "dms",
         "topic": "device/dms"
     } 
 }
