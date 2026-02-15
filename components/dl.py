@@ -36,7 +36,7 @@ def run_dl(dl, settings, batch, data_lock, threads, stop_event):
         from sensors.dl import run_dl_loop, DL
         print("Starting DL loop")
         #dl = DB(settings, batch)
-        ds_thread = threading.Thread(target=run_dl_loop, args=(dl, settings, data_lock, batch, stop_event, dl_callback))
+        ds_thread = threading.Thread(target=run_dl_loop, args=(dl, settings, data_lock, batch, stop_event, dl_callback), daemon=True)
         ds_thread.start()
         threads.append(ds_thread)
         print("DL loop started")

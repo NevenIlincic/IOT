@@ -2,10 +2,12 @@ import time
 from simulators.dl import toggle_light
 from simulators.dms import toggle_locked
 from simulators.db import toggle_buzzer
+from components.dms import dms_callback
 import threading
+from enum import Enum
+from enums import State
 
-
-def run_cli(mqtt_client, settings, stop_event, db, dl):
+def run_cli(mqtt_client, settings, stop_event, db, dl, alarm, security_system):
     dms_settings = settings['DMS']
     
     session = None
@@ -34,19 +36,28 @@ def run_cli(mqtt_client, settings, stop_event, db, dl):
                 else:
                     dl.toggle_light()
                     
-            elif command == "db":
+            elif command == "db on":
                 if settings["DB"]["simulated"]:
                     toggle_buzzer()
                 else:
-                    db.toggle_buzz()
-                
+                    db.toggle_buzz(True)
+            elif command == "db off":
+                if settings["DB"]["simulated"]:
+                    toggle_buzzer()
+                else:
+                    db.toggle_buzz(False)
+            
+            elif command == "alarm":
+                if security_system.value == State.ON:
+                    alarm.turn_on()
+        
             elif command.startswith("dms"):
                 arguments = command.split(" ")
                 if len(arguments) >= 2:
                     try:
-                        typed_password = int(arguments[1])
-                        toggle_locked(mqtt_client, dms_settings, typed_password)
-                    
+                        typed_password = arguments[1]
+                        #toggle_locked(mqtt_client, dms_settings, typed_password)
+                        dms_callback(mqtt_client, dms_settings, typed_password, alarm, security_system)
                     except:
                         print("Must be integer!")
                 else:

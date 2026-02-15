@@ -25,17 +25,21 @@ from components.dl import run_dl
 from components.dms import run_dms
 from components.db import run_db
 
-from sensors.db import DB
-from sensors.dl import DL
+# from sensors.db import DB
+# from sensors.dl import DL
+# from sensors.dms import DMS
+
+from classes.alarm import Alarm
+from classes.security_sistem import SecuritySystem
 
 from cli import run_cli
 import time
 
-try:
-    import RPi.GPIO as GPIO
-    GPIO.setmode(GPIO.BCM)
-except:
-    pass
+# try:
+#     import RPi.GPIO as GPIO
+#     GPIO.setmode(GPIO.BCM)
+# except:
+#     pass
 
 
 def fill_batch(mqtt_client, batch, data_lock, settings):
@@ -63,13 +67,13 @@ if __name__ == "__main__":
     threads = []
     stop_event = threading.Event()
     try:
-        
         mqtt_client = mqtt.Client()
         mqtt_client.connect("localhost", 1883, 60)
         mqtt_client.loop_start()
         
         # dht1_settings = settings['DHT1']
-        ds1_settings = settings['DS1']
+        alarm_settings = settings["ALARM"]
+        ds1_settings = settings['DS']
         dus1_settings = settings['DUS1']
         dpir1_settings = settings['DPIR1']
         dl_settings = settings['DL']
@@ -77,14 +81,19 @@ if __name__ == "__main__":
         db_settings = settings["DB"]
         # run_dht(dht1_settings, threads, stop_event)
         
-        db = DB(db_settings, batch)
-        dl = DL(dl_settings, batch)
+        alarm = Alarm(mqtt_client, alarm_settings)
+        security_system = SecuritySystem()
+        print(security_system.value)
         
-        run_ds(ds1_settings, batch, data_lock, threads, stop_event)
+        # db = DB(db_settings, batch)
+        # dl = DL(dl_settings, batch)
+        
+        #run_ds(ds1_settings, batch, data_lock, threads, stop_event)
         # run_dus1(mqtt_client, dus1_settings, threads, stop_event)
         # run_dpir1(mqtt_client, dpir1_settings, threads, stop_event)
-        run_db(db, db_settings, batch, data_lock, threads, stop_event)
-        run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
+        #run_db(db, db_settings, batch, data_lock, threads, stop_event)
+        # run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
+        run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)
         
         batch_thread =  threading.Thread(target=fill_batch, args=(mqtt_client, batch, data_lock, settings))
         batch_thread.start()
@@ -93,7 +102,7 @@ if __name__ == "__main__":
         # run_dl1(dl1_settings, threads, stop_event)
         # run_dms(dms_settings, threads, stop_event)
         
-        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client, settings, stop_event, db, dl), daemon=True)
+        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client, settings, stop_event, None, None, alarm, security_system), daemon=True)
         cli_thread.start()
         threads.append(cli_thread)
 

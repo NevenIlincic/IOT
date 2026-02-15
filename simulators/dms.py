@@ -30,7 +30,6 @@ def toggle_locked(mqtt_client, settings, password):
                     "simulated": True,
                     "timestamp": time.time()
                 } 
-    print(value)
     mqtt_client.publish(settings["topic"], json.dumps(data_to_send))
     # return settings, string_to_return
 

@@ -41,7 +41,7 @@ def run_ds(settings, batch, data_lock, threads, stop_event):
             from sensors.ds import run_ds_loop, DS
             print("Starting DS loop")
             ds = DS(settings, batch)
-            ds_thread = threading.Thread(target=run_ds_loop, args=(ds, settings, data_lock, batch, stop_event, ds_callback))
+            ds_thread = threading.Thread(target=run_ds_loop, args=(ds, settings, data_lock, batch, stop_event, ds_callback), daemon=True)
             ds_thread.start()
             threads.append(ds_thread)
             print("DS loop started")

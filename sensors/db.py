@@ -18,13 +18,14 @@ class DB(object):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.PORT_BUZZER, GPIO.OUT)
         
-    def toggle_buzz(self):
-        if self.value == Buzzing.BUZZING:
-            self.value = Buzzing.STOPPED
-            GPIO.output(self.PORT_BUZZER, False)
-        else:
+    def toggle_buzz(self, is_buzzing):
+        if is_buzzing:
             self.value = Buzzing.BUZZING
-            GPIO.output(self.PORT_BUZZER, True)
+        else:
+            self.value = Buzzing.STOPPED
+        
+        GPIO.output(self.PORT_BUZZER, is_buzzing)
+  
             # period = 1.0 / pitch
             # delay = period / 2
             # cycles = int(duration * pitch)

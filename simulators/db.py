@@ -2,12 +2,7 @@ import time
 import random
 from enum import Enum
 import json
-
-
-class Buzzing(Enum):
-    BUZZING = 1
-    STOPPED = 0
-
+from enums import Buzzing
 
 state = Buzzing.STOPPED
 

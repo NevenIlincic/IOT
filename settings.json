@@ -1,5 +1,11 @@
 {
     "topic": "devices",
+
+    "ALARM": {
+        "name": "alarm",
+        "topic": "devices"
+    },
+
     "PI":{
         "id": 1,
         "name": "neki_naziv"
@@ -14,14 +20,14 @@
     },
     "DS": {
         "simulated": true,
-        "pin": 17,
+        "pin": 15,
         "delay": 5,
         "name": "ds",
         "topic": "device/ds"
     },
     "DL": {
         "simulated": true,
-        "pin": 7,
+        "pin": 18,
         "delay": 5,
         "name": "dl",
         "topic": "device/dl"
@@ -49,10 +55,18 @@
     "DMS": {
         "simulated": true,
         "pin": 15,
-        "password": 1234,
+        "password": "1234",
         "locked": true,
         "delay": 7,
         "name": "dms",
-        "topic": "device/dms"
+        "topic": "devices",
+        "R1": 25,
+        "R2": 8,
+        "R3": 7,
+        "R4": 1,
+        "C1": 12,
+        "C2": 16,
+        "C3": 20,
+        "C4": 21
     } 
 }

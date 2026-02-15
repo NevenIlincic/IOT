@@ -2,12 +2,7 @@ import time
 import random
 from enum import Enum
 import json
-
-
-class DoorLightState(Enum):
-    ON = 1
-    OFF = 0
-
+from enums import DoorLightState
 
 state = DoorLightState.OFF
 
