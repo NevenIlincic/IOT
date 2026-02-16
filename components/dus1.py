@@ -1,32 +1,35 @@
 
-from simulators.dus1 import run_dus1_simulator
+from simulators.dus1 import run_dus_simulator
 import threading
 import time
 import json
 
-def dus1_callback(distance, code):
-    t = time.localtime()
-    s = "="*20
-    s += "\nDevice: Door Ultra Sonic Sensor 1\n"
-    s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
-    s += f"Code: {code}\n"
-    s += f"Distance: {distance}cm"
-    # print(s)
+def dus_callback(dus_settings, data_lock, batch, stop_event, distance):
+    payload = {
+            "name": dus_settings["name"],
+            "value": distance,
+            "simulated": dus_settings["simulated"],
+            "timestamp": time.time()
+    }
+    
+    with data_lock:
+            batch.append(payload)
+            
+    if stop_event.is_set():
+        return
 
-
-
-def run_dus1(mqtt_client, settings, threads, stop_event):
-        if settings['simulated']:
-            print("Starting dus1 simulator")
-            dus1_thread = threading.Thread(target = run_dus1_simulator, args=(mqtt_client, settings, dus1_callback, stop_event), daemon=True)
+def run_dus(dus_settings, threads, stop_event, batch, data_lock):
+        if dus_settings['simulated']:
+            print("Starting dus simulator")
+            dus1_thread = threading.Thread(target = run_dus_simulator, args=(dus_settings, data_lock, batch, dus_callback, stop_event), daemon=True)
             dus1_thread.start()
             threads.append(dus1_thread)
-            print("Dus1 simulator started")
-        # else:
-        #     from sensors.dht import run_dht_loop, DHT
-        #     print("Starting dht1 loop")
-        #     dht = DHT(settings['pin'])
-        #     dus1_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, dus1_callback, stop_event))
-        #     dus1_thread.start()
-        #     threads.append(dus1_thread)
-        #     print("Dht1 loop started")
+            print("Dus simulator started")
+        else:
+            from sensors.dus import run_dus_loop, DUS 
+            print("Starting DUS loop")
+            dus = DUS(dus_settings)
+            dus1_thread = threading.Thread(target=run_dus_loop, args=(dus, 2, dus_callback, stop_event))
+            dus1_thread.start()
+            threads.append(dus1_thread)
+            print("DUS loop started")

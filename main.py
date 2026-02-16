@@ -19,8 +19,8 @@ if smart_print_enabled:
 
 from components.dht import run_dht
 from components.ds1 import run_ds
-from components.dus1 import run_dus1
-from components.dpir1 import run_dpir1
+from components.dus1 import run_dus
+from components.dpir1 import run_dpir
 from components.dl import run_dl
 from components.dms import run_dms
 from components.db import run_db
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         # dht1_settings = settings['DHT1']
         alarm_settings = settings["ALARM"]
         ds1_settings = settings['DS']
-        dus1_settings = settings['DUS1']
-        dpir1_settings = settings['DPIR1']
+        dus_settings = settings['DUS']
+        dpir_settings = settings['DPIR']
         dl_settings = settings['DL']
         dms_settings = settings['DMS']
         db_settings = settings["DB"]
@@ -83,17 +83,17 @@ if __name__ == "__main__":
         
         alarm = Alarm(mqtt_client, alarm_settings)
         security_system = SecuritySystem()
-        print(security_system.value)
         
         # db = DB(db_settings, batch)
         # dl = DL(dl_settings, batch)
         
         #run_ds(ds1_settings, batch, data_lock, threads, stop_event)
-        # run_dus1(mqtt_client, dus1_settings, threads, stop_event)
-        # run_dpir1(mqtt_client, dpir1_settings, threads, stop_event)
+        #run_dus(dus_settings, threads, stop_event, batch, data_lock)
+       # run_dpir(dpir_settings, threads, stop_event, batch, data_lock)
         #run_db(db, db_settings, batch, data_lock, threads, stop_event)
         # run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
-        run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)
+        #run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)
+        
         
         batch_thread =  threading.Thread(target=fill_batch, args=(mqtt_client, batch, data_lock, settings))
         batch_thread.start()

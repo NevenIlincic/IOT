@@ -32,12 +32,14 @@
         "name": "dl",
         "topic": "device/dl"
     }, 
-    "DUS1": {
+    "DUS": {
         "simulated": true,
         "pin": 9,
         "delay": 5,
         "name": "dus",
-        "topic": "device/dus"
+        "topic": "device/dus",
+        "TRIG_PIN": 23,
+        "ECHO_PIN": 24
     },
     "DB": {
         "simulated": true,
@@ -45,7 +47,7 @@
         "name": "db",
         "topic": "device/db"
     },
-    "DPIR1": {
+    "DPIR": {
         "simulated": true,
         "pin": 13,
         "delay": 3,
@@ -68,5 +70,21 @@
         "C2": 16,
         "C3": 20,
         "C4": 21
-    } 
+    },
+
+    "RGB": {
+        "simulated": true,
+        "RED_PIN": 12,
+        "GREEN_PIN": 13,
+        "BLUE_PIN": 19,
+        "name": "rgb",
+        "topic": "devices"
+    },
+    
+    "IR": {
+        "simulated": true,
+        "pin": 17,
+        "name": "ir",
+        "topic": "devices"
+    }
 }

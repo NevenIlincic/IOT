@@ -69,6 +69,26 @@ def on_message(client, userdata, msg):
             
                 write_api.write(bucket="moj_bucket", record=point, org="moja_org")
                 
+            case "ir":
+                measurment_time = datetime.fromtimestamp(payload['timestamp'], tz=timezone.utc)
+                point = Point("IR") \
+                .tag("name", payload["name"]) \
+                .field("value", payload["value"]) \
+                .field("simulated", payload["simulated"]) \
+                .time(measurment_time)
+            
+                write_api.write(bucket="moj_bucket", record=point, org="moja_org")
+            
+            case "rgb":
+                measurment_time = datetime.fromtimestamp(payload['timestamp'], tz=timezone.utc)
+                point = Point("RGB") \
+                .tag("name", payload["name"]) \
+                .field("value", payload["value"]) \
+                .field("simulated", payload["simulated"]) \
+                .time(measurment_time)
+            
+                write_api.write(bucket="moj_bucket", record=point, org="moja_org")
+                
 def add_point(measurment_name, data):
     measurment_time = datetime.fromtimestamp(data['timestamp'], tz=timezone.utc)
     point = Point(measurment_name) \

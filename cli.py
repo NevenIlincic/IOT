@@ -3,13 +3,19 @@ from simulators.dl import toggle_light
 from simulators.dms import toggle_locked
 from simulators.db import toggle_buzzer
 from components.dms import dms_callback
+from components.ir import ir_callback
 import threading
 from enum import Enum
 from enums import State
+# from sensors.rgb import RGB
 
 def run_cli(mqtt_client, settings, stop_event, db, dl, alarm, security_system):
     dms_settings = settings['DMS']
     
+    rgb = None
+    if not settings["RGB"]["simulated"]:
+        pass
+        #rgb = RGB(settings["RGB"])
     session = None
     smart_print_enabled = settings['PRINT']['activated']
     if smart_print_enabled:
@@ -50,8 +56,13 @@ def run_cli(mqtt_client, settings, stop_event, db, dl, alarm, security_system):
             elif command == "alarm":
                 if security_system.value == State.ON:
                     alarm.turn_on()
-        
-            elif command.startswith("dms"):
+
+            elif command.startswith("ir") and settings["IR"]["simulated"]:
+                arguments = command.split(" ")
+                if len(arguments) >= 2:
+                    if arguments[1] in ["0", "1", "2", "3", "4", "5", "6", "7"]:
+                        ir_callback(mqtt_client, settings["IR"], rgb, settings["RGB"], stop_event, arguments[1])
+            elif command.startswith("dms") and settings["DMS"]["simulated"]:
                 arguments = command.split(" ")
                 if len(arguments) >= 2:
                     try:

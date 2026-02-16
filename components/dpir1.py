@@ -1,30 +1,35 @@
 
-from simulators.dpir1 import run_dpir1_simulator
+from simulators.dpir1 import run_dpir_simulator
 import threading
 import time
 
-def dpir1_callback(state, code):
-    t = time.localtime()
-    s = "="*20
-    s +=  "\nDevice: Door Motion Sensor 1\n"
-    s += f"Timestamp: {time.strftime('%H:%M:%S', t)}\n"
-    s += f"Code: {code}\n"
-    s += f"Motion: {state.name}"
-    # print(s)
+def dpir_callback(dpir_settings, data_lock, batch, stop_event, value):
+    payload = {
+            "name": dpir_settings["name"],
+            "value": value.name,
+            "simulated": dpir_settings["simulated"],
+            "timestamp": time.time()
+    }
+    
+    with data_lock:
+            batch.append(payload)
+            
+    if stop_event.is_set():
+        return
 
 
-def run_dpir1(mqtt_client, settings, threads, stop_event):
+def run_dpir(settings, threads, stop_event, batch, data_lock):
     if settings['simulated']:
-        print("Starting dpir1 simulator")
-        ds1_thread = threading.Thread(target = run_dpir1_simulator, args=(mqtt_client, settings, dpir1_callback, stop_event), daemon=True)
-        ds1_thread.start()
-        threads.append(ds1_thread)
-        print("Dpir1 simulator started")
-    # else:
-    #     from sensors.dht import run_dht_loop, DHT
-    #     print("Starting dpir1 loop")
-    #     dht = DHT(settings['pin'])
-    #     ds1_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, dpir1_callback, stop_event))
-    #     ds1_thread.start()
-    #     threads.append(ds1_thread)
-    #     print("Dpir loop started")
+        print("Starting DPIR simulator")
+        dpir_thread = threading.Thread(target = run_dpir_simulator, args=(settings, data_lock, batch, dpir_callback, stop_event), daemon=True)
+        dpir_thread.start()
+        threads.append(dpir_thread)
+        print("DPIR simulator started")
+    else:
+        from sensors.dpir import run_dpir_loop, DPIR
+        print("Starting DPIR loop")
+        dpir = DPIR(settings)
+        dpir_thread = threading.Thread(target=run_dpir_loop, args=(dpir, settings, data_lock, batch, stop_event, dpir_callback), daemon=True)
+        dpir_thread.start()
+        threads.append(dpir_thread)
+        print("DPIR loop started")

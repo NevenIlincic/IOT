@@ -23,3 +23,18 @@ class Attempt(Enum):
 class AlarmState(Enum):
     ACTIVE = 1
     NOT_ACTIVE = 0
+
+class MotionDetected(Enum):
+    DETECTED = 1
+    NOT_DETECTED = 0
+    
+class RGBColor(Enum):
+    OFF = 0
+    WHITE = 1
+    RED = 2
+    GREEN = 3
+    BLUE = 4
+    YELLOW = 5
+    PURPLE = 6
+    LIGHT_BLUE = 7
+    
