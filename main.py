@@ -25,7 +25,8 @@ from components.dl import run_dl
 from components.dms import run_dms
 from components.db import run_db
 from components.dht import run_dht
-from components.gyro import run_gyro
+# from components.gyro import run_gyro
+from components.lcd import run_lcd
 
 # from sensors.db import DB
 # from sensors.dl import DL
@@ -82,11 +83,15 @@ if __name__ == "__main__":
         dms_settings = settings['DMS']
         db_settings = settings["DB"]
         gyro_settings = settings["GYRO"]
+        lcd_settings = settings["LCD"]
         # run_dht(dht1_settings, threads, stop_event)
         
         alarm = Alarm(mqtt_client, alarm_settings)
         security_system = SecuritySystem()
         
+        dht_lct_shared_dict = {
+            "dht": [20, 20] #1. Temperatura, 2. Humidity
+        }
         # db = DB(db_settings, batch)
         # dl = DL(dl_settings, batch)
         
@@ -96,8 +101,9 @@ if __name__ == "__main__":
         #run_db(db, db_settings, batch, data_lock, threads, stop_event)
         # run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
         #run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)
-        #run_dht(dht1_settings, threads, stop_event, data_lock, batch)
-        run_gyro(gyro_settings, threads, stop_event, data_lock, batch)
+        run_dht(dht1_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
+        #run_gyro(gyro_settings, threads, stop_event, data_lock, batch)
+        run_lcd(lcd_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
         
         
         batch_thread =  threading.Thread(target=fill_batch, args=(mqtt_client, batch, data_lock, settings))

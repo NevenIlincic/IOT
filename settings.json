@@ -94,5 +94,11 @@
         "simulated": true,
         "name": "gyroscope",
         "delay": 3
+    },
+
+    "LCD": {
+        "simulated": true,
+        "name": "lcd",
+        "delay": 4
     }
 }

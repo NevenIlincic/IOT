@@ -46,6 +46,9 @@ def on_message(client, userdata, msg):
                 
                 case "db":
                     add_point("DB", single_data)
+                
+                case "lcd":
+                    add_point("LCD", single_data)
                 case "dht":
                     measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
                     point = Point("DHT") \
