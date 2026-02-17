@@ -15,8 +15,10 @@
         "activated": true
     },
     "DHT1": {
+        "name": "dht",
         "simulated": true,
-        "pin": 5
+        "pin": 5,
+        "delay": 3
     },
     "DS": {
         "simulated": true,
@@ -86,5 +88,11 @@
         "pin": 17,
         "name": "ir",
         "topic": "devices"
+    },
+
+    "GYRO": {
+        "simulated": true,
+        "name": "gyroscope",
+        "delay": 3
     }
 }

@@ -46,6 +46,27 @@ def on_message(client, userdata, msg):
                 
                 case "db":
                     add_point("DB", single_data)
+                case "dht":
+                    measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
+                    point = Point("DHT") \
+                    .tag("name", single_data["name"]) \
+                    .field("simulated", single_data["simulated"]) \
+                    .field("temperature", single_data["temperature"])\
+                    .field("humidity", single_data["humidity"])\
+                    .time(measurment_time)
+            
+                    write_api.write(bucket="moj_bucket", record=point, org="moja_org")
+                case "gyroscope":
+                    measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
+                    point = Point("GYROSCOPE") \
+                    .tag("name", single_data["name"]) \
+                    .field("simulated", single_data["simulated"]) \
+                    .field("rotation", single_data["rotation"])\
+                    .field("acceleration", single_data["acceleration"])\
+                    .time(measurment_time)
+            
+                    write_api.write(bucket="moj_bucket", record=point, org="moja_org")
+                    
     elif type(payload) == dict:
         name = payload["name"]
         match name:

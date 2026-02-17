@@ -4,27 +4,35 @@ from simulators.dht import run_dht_simulator
 import threading
 import time
 
-def dht_callback(humidity, temperature, code):
-    t = time.localtime()
-    print("="*20)
-    print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-    print(f"Code: {code}")
-    print(f"Humidity: {humidity}%")
-    print(f"Temperature: {temperature}°C")
+def dht_callback(dht_settings, data_lock, batch, temperature, humidity, stop_event ):
+    payload = {
+        "name": dht_settings["name"],
+        "temperature": temperature,
+        "humidity": humidity,
+        "simulated": dht_settings["simulated"],
+        "timestamp": time.time()
+    }
+    
+    with data_lock:
+        batch.append(payload)
+        
+    if stop_event.is_set():
+        return
 
 
-def run_dht(settings, threads, stop_event):
+
+def run_dht(settings, threads, stop_event, data_lock, batch):
         if settings['simulated']:
-            print("Starting dht1 sumilator")
-            dht1_thread = threading.Thread(target = run_dht_simulator, args=(2, dht_callback, stop_event))
+            print("Starting DHT sumilator")
+            dht1_thread = threading.Thread(target = run_dht_simulator, args=(settings, data_lock, batch, dht_callback, stop_event))
             dht1_thread.start()
             threads.append(dht1_thread)
-            print("Dht1 sumilator started")
+            print("DHT sumilator started")
         else:
             from sensors.dht import run_dht_loop, DHT
-            print("Starting dht1 loop")
+            print("Starting DHT loop")
             dht = DHT(settings['pin'])
-            dht1_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, dht_callback, stop_event))
+            dht1_thread = threading.Thread(target=run_dht_loop, args=(dht, data_lock, batch, dht_callback, stop_event))
             dht1_thread.start()
             threads.append(dht1_thread)
-            print("Dht1 loop started")
+            print("DHT loop started")

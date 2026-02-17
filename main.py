@@ -24,6 +24,8 @@ from components.dpir1 import run_dpir
 from components.dl import run_dl
 from components.dms import run_dms
 from components.db import run_db
+from components.dht import run_dht
+from components.gyro import run_gyro
 
 # from sensors.db import DB
 # from sensors.dl import DL
@@ -71,7 +73,7 @@ if __name__ == "__main__":
         mqtt_client.connect("localhost", 1883, 60)
         mqtt_client.loop_start()
         
-        # dht1_settings = settings['DHT1']
+        dht1_settings = settings['DHT1']
         alarm_settings = settings["ALARM"]
         ds1_settings = settings['DS']
         dus_settings = settings['DUS']
@@ -79,6 +81,7 @@ if __name__ == "__main__":
         dl_settings = settings['DL']
         dms_settings = settings['DMS']
         db_settings = settings["DB"]
+        gyro_settings = settings["GYRO"]
         # run_dht(dht1_settings, threads, stop_event)
         
         alarm = Alarm(mqtt_client, alarm_settings)
@@ -93,6 +96,8 @@ if __name__ == "__main__":
         #run_db(db, db_settings, batch, data_lock, threads, stop_event)
         # run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
         #run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)
+        #run_dht(dht1_settings, threads, stop_event, data_lock, batch)
+        run_gyro(gyro_settings, threads, stop_event, data_lock, batch)
         
         
         batch_thread =  threading.Thread(target=fill_batch, args=(mqtt_client, batch, data_lock, settings))
