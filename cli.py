@@ -4,12 +4,17 @@ from simulators.dms import toggle_locked
 from simulators.db import toggle_buzzer
 from components.dms import dms_callback
 from components.ir import ir_callback
+from components.db import db_callback
+from components.dl import dl_callback
+
 import threading
 from enum import Enum
 from enums import State
+from enums import Buzzing
+from enums import DoorLightState
 # from sensors.rgb import RGB
 
-def run_cli(mqtt_client, settings, stop_event, db, dl, alarm, security_system):
+def run_cli(mqtt_client, data_lock, batch, settings, stop_event, db, dl, alarm, security_system):
     dms_settings = settings['DMS']
     
     rgb = None
@@ -38,18 +43,23 @@ def run_cli(mqtt_client, settings, stop_event, db, dl, alarm, security_system):
             
             elif command == "dl":
                 if settings["DL"]["simulated"]:
-                    toggle_light()
+                    dl_callback(settings["DL"], data_lock, batch, stop_event, DoorLightState.ON.name)
+                    time.sleep(10)
+                    dl_callback(settings["DL"], data_lock, batch, stop_event, DoorLightState.OFF.name)
+                    #toggle_light()
                 else:
                     dl.toggle_light()
                     
             elif command == "db on":
                 if settings["DB"]["simulated"]:
-                    toggle_buzzer()
+                    db_callback(settings["DB"], data_lock, batch, stop_event, Buzzing.BUZZING.name)
+                   # toggle_buzzer()
                 else:
                     db.toggle_buzz(True)
             elif command == "db off":
                 if settings["DB"]["simulated"]:
-                    toggle_buzzer()
+                    db_callback(settings["DB"], data_lock, batch, stop_event, Buzzing.STOPPED.name)
+                    #toggle_buzzer()
                 else:
                     db.toggle_buzz(False)
             

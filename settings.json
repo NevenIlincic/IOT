@@ -45,9 +45,10 @@
     },
     "DB": {
         "simulated": true,
-        "pin": 11,
+        "pin": 17,
         "name": "db",
-        "topic": "device/db"
+        "topic": "device/db",
+        "delay": 3
     },
     "DPIR": {
         "simulated": true,

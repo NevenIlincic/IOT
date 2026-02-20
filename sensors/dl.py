@@ -1,11 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 from enum import Enum
-
-
-class DoorLightState(Enum):
-    ON = 1
-    OFF = 0
+from enums import DoorLightState
 
 class DL(object):
     

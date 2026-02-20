@@ -1,5 +1,5 @@
 
-# from sensors.lcd.LCD1602 import run_lcd_loop
+from sensors.lcd.LCD1602 import run_lcd_loop
 from simulators.lcd import run_lcd_simulator
 import threading
 import time
@@ -31,7 +31,7 @@ def run_lcd(settings, threads, stop_event, data_lock, batch, dht_lcd_shared_dict
             print("LCD sumilator started")
         else:
             print("Starting LCD loop")
-            # dht1_thread = threading.Thread(target=run_lcd_loop, args=(settings, lcd_callback, data_lock, batch, stop_event, dht_lcd_shared_dict))
-            # dht1_thread.start()
-            # threads.append(dht1_thread)
-            # print("LCD loop started")
+            dht1_thread = threading.Thread(target=run_lcd_loop, args=(settings, lcd_callback, data_lock, batch, stop_event, dht_lcd_shared_dict))
+            dht1_thread.start()
+            threads.append(dht1_thread)
+            print("LCD loop started")

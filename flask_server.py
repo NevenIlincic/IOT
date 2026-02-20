@@ -14,7 +14,7 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as subscribe
 
 influx_config = {
-    "url": "http://localhost:8087", ##PROMENI NA IP UCIONICE
+    "url": "http://192.168.107.153:8087", ##PROMENI NA IP UCIONICE
     "token": "my-super-secret-token",
     "org": "moja_org",
     "bucket": "tvoj_bucket"
@@ -45,9 +45,11 @@ def on_message(client, userdata, msg):
                     add_point("DL", single_data)
                 
                 case "db":
+                    print(single_data)
                     add_point("DB", single_data)
                 
                 case "lcd":
+                    print(single_data)
                     add_point("LCD", single_data)
                 case "dht":
                     measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
@@ -94,6 +96,7 @@ def on_message(client, userdata, msg):
                 write_api.write(bucket="moj_bucket", record=point, org="moja_org")
                 
             case "ir":
+                print(payload)
                 measurment_time = datetime.fromtimestamp(payload['timestamp'], tz=timezone.utc)
                 point = Point("IR") \
                 .tag("name", payload["name"]) \
@@ -140,6 +143,6 @@ if __name__ == "__main__":
     client = mqtt.Client(userdata = data )
     client.on_connect = on_connect
     client.on_message = on_message
-    client.connect("localhost", 1883, 60) #PROMENI NA IP UCIONICE
+    client.connect("192.168.107.153", 1883, 60) #PROMENI NA IP UCIONICE
 
     client.loop_forever()

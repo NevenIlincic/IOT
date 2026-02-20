@@ -70,10 +70,31 @@ class IR(object):
         tmpB2 = int(str(binaryValue),2) #Temporarely propper base 2
         return hex(tmpB2)
 
-def run_ir_loop(mqtt_client, ir: IR, ir_settings, stop_event, callback): 
-    while True:
-        inData = ir.convertHex(ir.getBinary()) #Runs subs to get incoming hex value
-        for button in range(len(ir.Buttons)):#Runs through every value in list
-            if hex(ir.Buttons[button]) == inData: #Checks this against incoming
-                if (hex(ir.Buttons[button]) in ["0", "1", "2", "3", "4", "5", "6", "7"]):
-                    callback(mqtt_client, ir_settings, stop_event, hex(ir.Buttons[button]))
+# def run_ir_loop(mqtt_client, ir: IR, ir_settings, stop_event, callback): 
+#     while True:
+#         inData = ir.convertHex(ir.getBinary()) #Runs subs to get incoming hex value
+#         for button in range(len(ir.Buttons)):#Runs through every value in list
+#             if hex(ir.Buttons[button]) == inData: #Checks this against incoming
+#                 if (hex(ir.Buttons[button]) in ["0", "1", "2", "3", "4", "5", "6", "7"]):
+#                     callback(mqtt_client, ir_settings, stop_event, hex(ir.Buttons[button]))
+
+def run_ir_loop(mqtt_client, ir: IR, ir_settings, stop_event, callback, rgb_settings): 
+    while not stop_event.is_set():
+        # 1. Uzmi binarnu vrednost i konvertuj u HEX
+        binary_val = ir.getBinary()
+        inData = ir.convertHex(binary_val) 
+        
+        # Debug: ispiši šta je senzor zapravo očitao
+        if inData != "0x1": # 0x1 je često default kad nema signala
+             print(f"Očitani HEX: {inData}")
+
+        # 2. Prođi kroz definisane kodove u self.Buttons
+        for i in range(len(ir.Buttons)):
+            if hex(ir.Buttons[i]) == inData:
+                button_name = ir.ButtonsNames[i]
+                print(f"Pritisnuto dugme: {button_name}")
+
+                # 3. Ako je pritisnuto dugme koje je broj (0-7), pošalji taj broj
+                if button_name in ["0", "1", "2", "3", "4", "5", "6", "7"]:
+                    # Ovde šalješ "0", "1" itd. kao string, što tvoj callback očekuje
+                    callback(mqtt_client, ir_settings, None, rgb_settings, stop_event, button_name)

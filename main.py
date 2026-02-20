@@ -27,6 +27,7 @@ from components.db import run_db
 from components.dht import run_dht
 # from components.gyro import run_gyro
 from components.lcd import run_lcd
+from components.ir import run_ir
 
 # from sensors.db import DB
 # from sensors.dl import DL
@@ -71,7 +72,7 @@ if __name__ == "__main__":
     stop_event = threading.Event()
     try:
         mqtt_client = mqtt.Client()
-        mqtt_client.connect("localhost", 1883, 60)
+        mqtt_client.connect("192.168.107.153", 1883, 60)
         mqtt_client.loop_start()
         
         dht1_settings = settings['DHT1']
@@ -84,6 +85,8 @@ if __name__ == "__main__":
         db_settings = settings["DB"]
         gyro_settings = settings["GYRO"]
         lcd_settings = settings["LCD"]
+        ir_settings = settings["IR"]
+        rgb_settings = settings["RGB"]
         # run_dht(dht1_settings, threads, stop_event)
         
         alarm = Alarm(mqtt_client, alarm_settings)
@@ -92,7 +95,7 @@ if __name__ == "__main__":
         dht_lct_shared_dict = {
             "dht": [20, 20] #1. Temperatura, 2. Humidity
         }
-        # db = DB(db_settings, batch)
+        #db = DB(db_settings, batch)
         # dl = DL(dl_settings, batch)
         
         #run_ds(ds1_settings, batch, data_lock, threads, stop_event)
@@ -103,7 +106,8 @@ if __name__ == "__main__":
         #run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)
         run_dht(dht1_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
         #run_gyro(gyro_settings, threads, stop_event, data_lock, batch)
-        run_lcd(lcd_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
+        #run_lcd(lcd_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
+        #run_ir(mqtt_client, ir_settings, threads, stop_event, rgb_settings)
         
         
         batch_thread =  threading.Thread(target=fill_batch, args=(mqtt_client, batch, data_lock, settings))
@@ -113,7 +117,7 @@ if __name__ == "__main__":
         # run_dl1(dl1_settings, threads, stop_event)
         # run_dms(dms_settings, threads, stop_event)
         
-        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client, settings, stop_event, None, None, alarm, security_system), daemon=True)
+        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client,data_lock, batch, settings, stop_event, None, None, alarm, security_system), daemon=True)
         cli_thread.start()
         threads.append(cli_thread)
 

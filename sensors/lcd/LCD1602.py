@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from PCF8574 import PCF8574_GPIO
-from Adafruit_LCD1602 import Adafruit_CharLCD
+from sensors.lcd.PCF8574 import PCF8574_GPIO
+from sensors.lcd.Adafruit_LCD1602 import Adafruit_CharLCD
 
 from time import sleep, strftime
 from datetime import datetime
@@ -22,8 +22,8 @@ def run_lcd_loop(lcd_settings, callback, data_lock, batch, stop_event, dht_lcd_s
         current_dht = "dht"
         #lcd.clear()
         lcd.setCursor(0,0)  # set cursor position
-        temp_string = 'Bedroom temp: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
-        humidity_string = 'Bedroom hum: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+        temp_string = 'Bedroom T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+        humidity_string = 'Bedroom H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
         lcd.message(temp_string)
         lcd.message(humidity_string)
         callback(lcd_settings, data_lock, batch, temp_string, humidity_string, stop_event)

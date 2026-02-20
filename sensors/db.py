@@ -1,11 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 from enum import Enum
-
-
-class Buzzing(Enum):
-    BUZZING = 1
-    STOPPED = 0
+from enums import Buzzing
 
 class DB(object):
     
