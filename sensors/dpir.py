@@ -19,7 +19,7 @@ class DPIR(object):
     def no_motion(self, channel):
         self.value = MotionDetected.NOT_DETECTED
 
-def run_dpir_loop(dpir: DPIR, dpir_settings, data_lock, batch, stop_event, callback):
+def run_dpir_loop(dpir: DPIR, dpir_settings, data_lock, batch, stop_event, callback, dl, dl_settings):
     while True:
-        callback(dpir_settings, data_lock, batch, stop_event, dpir.value)
+        callback(dpir_settings, dl, dl_settings, data_lock, batch, stop_event, dpir.value)
         time.sleep(dpir_settings["delay"])

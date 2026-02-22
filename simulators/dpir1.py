@@ -15,11 +15,11 @@ def generate_values(initial_state = MotionDetected.NOT_DETECTED):
             state = MotionDetected.NOT_DETECTED
         yield state
 
-def run_dpir_simulator(settings, data_lock, batch, callback, stop_event):
+def run_dpir_simulator(settings, data_lock, batch, callback, stop_event, dl, dl_settings):
         for state in generate_values():
-            callback(settings, data_lock, batch, stop_event, state)
+            callback(settings, dl, dl_settings, data_lock, batch, stop_event, state)
             time.sleep(settings['delay']) 
             if stop_event.is_set():
                   break
 
-         
+
