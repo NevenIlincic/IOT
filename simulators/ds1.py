@@ -3,15 +3,16 @@ import random
 from enum import Enum
 import json
 import threading
+from enums import DoorState
 
-class DoorState(Enum):
-    OPEN = 1
-    CLOSED = 0
 
-def generate_values(initial_state = DoorState.CLOSED):
+def generate_values(initial_state = DoorState.CLOSED, is_kitchen_button = True):
     state = initial_state
     while True:
-        x = random.randint(0,10)
+        if is_kitchen_button:
+            x = random.randint(0, 30)
+        else:
+            x = random.randint(0,10)
         if x == 0:
             state = DoorState.OPEN
         else:
@@ -19,7 +20,7 @@ def generate_values(initial_state = DoorState.CLOSED):
         yield state
 
 def run_ds1_simulator(settings, data_lock, batch, stop_event, callback):
-    for state in generate_values():
+    for state in generate_values(is_kitchen_button=settings["kitchen_button"]):
         callback(settings, data_lock, batch, stop_event, state.name)
         time.sleep(settings['delay'])
         if stop_event.is_set():

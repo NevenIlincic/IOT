@@ -30,17 +30,17 @@ def ds_callback(settings, data_lock, batch, stop_event, value):
 
 
 
-def run_ds(settings, batch, data_lock, threads, stop_event):
+def run_ds(settings, batch, data_lock, threads, stop_event, sd_settings=None):
         if settings['simulated']:
-            print("Starting ds1 simulator")
+            print("Starting" + settings["name"] + " simulator")
             ds1_thread = threading.Thread(target = run_ds1_simulator, args=(settings, data_lock, batch, stop_event, ds_callback ), daemon=True)
             ds1_thread.start()
             threads.append(ds1_thread)
-            print("Ds1 simulator started")
+            print(settings["name"] + " simulator started")
         else:
             from sensors.ds import run_ds_loop, DS
             print("Starting DS loop")
-            ds = DS(settings, batch)
+            ds = DS(settings, batch, sd_settings)
             ds_thread = threading.Thread(target=run_ds_loop, args=(ds, settings, data_lock, batch, stop_event, ds_callback), daemon=True)
             ds_thread.start()
             threads.append(ds_thread)

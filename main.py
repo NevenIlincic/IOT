@@ -78,10 +78,21 @@ if __name__ == "__main__":
         dht1_settings = settings['DHT1']
         dht2_settings = settings['DHT2']
         dht3_settings = settings['DHT3']
+        
+        ds1_settings = settings['DS1']
+        ds2_settings = settings['DS2']
+        btn_settings = settings["BTN"]
+        
         alarm_settings = settings["ALARM"]
-        ds1_settings = settings['DS']
-        dus_settings = settings['DUS']
-        dpir_settings = settings['DPIR']
+        
+        dus1_settings = settings['DUS1']
+        dus2_settings = settings['DUS2']
+        
+        dpir1_settings = settings['DPIR1']
+        dpir2_settings = settings['DPIR2']
+        dpir3_settings = settings['DPIR3']
+        
+        
         dl_settings = settings['DL']
         dms_settings = settings['DMS']
         db_settings = settings["DB"]
@@ -89,6 +100,7 @@ if __name__ == "__main__":
         lcd_settings = settings["LCD"]
         ir_settings = settings["IR"]
         rgb_settings = settings["RGB"]
+        sd_settings = settings["4SD"]
         # run_dht(dht1_settings, threads, stop_event)
         
         alarm = Alarm(mqtt_client, alarm_settings)
@@ -107,8 +119,13 @@ if __name__ == "__main__":
         # dl = DL(dl_settings, batch)
         
         #run_ds(ds1_settings, batch, data_lock, threads, stop_event)
-        #run_dus(dus_settings, threads, stop_event, batch, data_lock)
-       # run_dpir(dpir_settings, threads, stop_event, batch, data_lock)
+        #run_ds(ds2_settings, batch, data_lock, threads, stop_event)
+        #run_ds(btn_settings, batch, data_lock, threads, stop_event, sd_settings)
+        #run_dus(dus1_settings, threads, stop_event, batch, data_lock)
+        #run_dus(dus2_settings, threads, stop_event, batch, data_lock)
+        run_dpir(dpir1_settings, threads, stop_event, batch, data_lock)
+        run_dpir(dpir2_settings, threads, stop_event, batch, data_lock)
+        run_dpir(dpir3_settings, threads, stop_event, batch, data_lock)
         #run_db(db, db_settings, batch, data_lock, threads, stop_event)
         # run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
         #run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)

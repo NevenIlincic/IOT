@@ -33,13 +33,26 @@ def on_message(client, userdata, msg):
             name = single_data["name"]
             
             match name:
-                case "dpir":
-                    add_point("DPIR", single_data)
+                case "dpir_1":
+                    add_point("DPIR_1", single_data)
+                case "dpir_2":
+                    add_point("DPIR_2", single_data)
+                case "dpir_3":
+                    add_point("DPIR_3", single_data)
                 
-                case "dus":
-                    add_point("DUS", single_data)
-                case "ds":
-                    add_point("DS", single_data)
+                case "dus_1":
+                    add_point("DUS_1", single_data)
+                case "dus_2":
+                    add_point("DUS_2", single_data)
+                    
+                case "ds_1":
+                    print(single_data)
+                    add_point("DS_1", single_data)
+                case "ds_2":
+                    print(single_data)
+                    add_point("DS_2", single_data)
+                case "btn":
+                    add_point("BTN", single_data)
                         
                 case "dl":
                     add_point("DL", single_data)
