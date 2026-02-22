@@ -22,14 +22,14 @@ def run_lcd_simulator(lcd_settings, data_lock, batch, callback, stop_event, dht_
         temp_string = ""
         humidity_string = ""
         if current_dht == "dht_1":    
-            temp_string = 'Bedroom temp: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
-            humidity_string = 'Bedroom hum: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+            temp_string = 'Bedroom T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Bedroom H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
         elif current_dht == "dht_2":
-            temp_string = 'Master bedroom temp: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
-            humidity_string = 'Master bedroom hum: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+            temp_string = 'Master T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Master T: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
         else:
-            temp_string = 'Kitchen bedroom temp: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
-            humidity_string = 'Kitchen bedroom hum: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+            temp_string = 'Kitchen T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Kitchen H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
             
         callback(lcd_settings, data_lock, batch, temp_string, humidity_string, stop_event)
         time.sleep(lcd_settings["delay"]) 

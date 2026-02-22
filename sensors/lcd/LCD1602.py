@@ -18,16 +18,28 @@ def get_time_now():     # get system time
 def run_lcd_loop(lcd_settings, callback, data_lock, batch, stop_event, dht_lcd_shared_dict):
     mcp.output(3,1)     # turn on LCD backlight
     lcd.begin(16,2)     # set number of LCD lines and columns
-    while(True):         
-        current_dht = "dht"
+    i = 0
+    while(True):       
+        current_dht = "dht_" + str(i+1)
         #lcd.clear()
         lcd.setCursor(0,0)  # set cursor position
-        temp_string = 'Bedroom T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
-        humidity_string = 'Bedroom H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+        temp_string = ""
+        humidity_string = ""
+        if current_dht == "dht_1":    
+            temp_string = 'Bedroom T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Bedroom H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+        elif current_dht == "dht_2":
+            temp_string = 'Master T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Master H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+        else:
+            temp_string = 'Kitchen T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Kitchen H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+        
         lcd.message(temp_string)
         lcd.message(humidity_string)
         callback(lcd_settings, data_lock, batch, temp_string, humidity_string, stop_event)
         sleep(lcd_settings["delay"])
+        i = (i+1) % 3
         
 def destroy():
     lcd.clear()

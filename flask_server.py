@@ -76,6 +76,10 @@ def on_message(client, userdata, msg):
                     .time(measurment_time)
             
                     write_api.write(bucket="moj_bucket", record=point, org="moja_org")
+                
+                case "4sd":
+                    print(single_data)
+                    add_point("4SD", single_data)
                     
     elif type(payload) == dict:
         name = payload["name"]

@@ -6,6 +6,7 @@ from components.dms import dms_callback
 from components.ir import ir_callback
 from components.db import db_callback
 from components.dl import dl_callback
+from components.sd import sd_callback
 
 import threading
 from enum import Enum
@@ -14,7 +15,7 @@ from enums import Buzzing
 from enums import DoorLightState
 # from sensors.rgb import RGB
 
-def run_cli(mqtt_client, data_lock, batch, settings, stop_event, db, dl, alarm, security_system):
+def run_cli(mqtt_client, data_lock, batch, settings, stop_event, db, dl, alarm, security_system, threads):
     dms_settings = settings['DMS']
     
     rgb = None
@@ -83,10 +84,49 @@ def run_cli(mqtt_client, data_lock, batch, settings, stop_event, db, dl, alarm, 
                         print("Must be integer!")
                 else:
                     print("Unknown command!") 
+            elif command.startswith("start") and settings["4SD"]["simulated"]:
+                arguments = command.split(" ")
+                if len(arguments) == 2:
+                    try:
+                        seconds = int(arguments[1])
+                        settings["4SD"]["seconds"] = seconds
+                        
+                        
+                        sd_thread = threading.Thread(target = run_sd_counter, args=(settings, data_lock, batch, stop_event), daemon=True)
+                        sd_thread.start()
+                        threads.append(sd_thread)
+                    except:
+                        print("Must be integer")
+                else:
+                    print("Wrong command arguments!")
+                    
+            elif command == "btn":
+                if settings["4SD"]["seconds"] > 0:
+                    settings["4SD"]["seconds"] += 10
+                elif settings["4SD"]["blinking"]:
+                     settings["4SD"]["blinking"] = False
+                     print("Stopped BLINKING")
+                
             else:
                 print("Unknown command!")
+            
+        
         except:
             print("Stopping app!")
             stop_event.set()
             break
+
+def run_sd_counter(settings, data_lock, batch, stop_event):
+    sd_callback(settings["4SD"], data_lock, batch, stop_event)
+    while True:
+        settings["4SD"]["seconds"] -= 1
+        print(settings["4SD"]["seconds"])
+        sd_callback(settings["4SD"], data_lock, batch, stop_event)
+        time.sleep(0.9)
         
+        if settings["4SD"]["seconds"] == 0: 
+            settings["4SD"]["blinking"] = True
+            print("BLINKING!")
+            break
+        
+    

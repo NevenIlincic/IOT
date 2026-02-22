@@ -114,5 +114,13 @@
         "simulated": true,
         "name": "lcd",
         "delay": 4
+    },
+
+    "4SD": {
+        "simulated": true,
+        "name": "4sd",
+        "delay": 1,
+        "blinking": false,
+        "seconds": 0
     }
 }
