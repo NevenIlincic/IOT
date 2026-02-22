@@ -14,7 +14,7 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as subscribe
 
 influx_config = {
-    "url": "http://192.168.107.153:8087", ##PROMENI NA IP UCIONICE
+    "url": "http://localhost:8087", ##PROMENI NA IP UCIONICE
     "token": "my-super-secret-token",
     "org": "moja_org",
     "bucket": "tvoj_bucket"
@@ -51,16 +51,21 @@ def on_message(client, userdata, msg):
                 case "lcd":
                     print(single_data)
                     add_point("LCD", single_data)
-                case "dht":
-                    measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
-                    point = Point("DHT") \
-                    .tag("name", single_data["name"]) \
-                    .field("simulated", single_data["simulated"]) \
-                    .field("temperature", single_data["temperature"])\
-                    .field("humidity", single_data["humidity"])\
-                    .time(measurment_time)
+                case "dht_1":
+                    add_point_dht("DHT_1", single_data)
+                    # measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
+                    # point = Point("DHT") \
+                    # .tag("name", single_data["name"]) \
+                    # .field("simulated", single_data["simulated"]) \
+                    # .field("temperature", single_data["temperature"])\
+                    # .field("humidity", single_data["humidity"])\
+                    # .time(measurment_time)
             
-                    write_api.write(bucket="moj_bucket", record=point, org="moja_org")
+                    # write_api.write(bucket="moj_bucket", record=point, org="moja_org")
+                case "dht_2":
+                    add_point_dht("DHT_2", single_data)
+                case "dht_3":
+                    add_point_dht("DHT_3", single_data)
                 case "gyroscope":
                     measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
                     point = Point("GYROSCOPE") \
@@ -126,6 +131,18 @@ def add_point(measurment_name, data):
     
     write_api.write(bucket="moj_bucket", record=point, org="moja_org")
 
+def add_point_dht(measurment_name, single_data):
+    measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
+    point = Point(measurment_name) \
+    .tag("name", single_data["name"]) \
+    .field("simulated", single_data["simulated"]) \
+    .field("temperature", single_data["temperature"])\
+    .field("humidity", single_data["humidity"])\
+    .time(measurment_time)
+
+    write_api.write(bucket="moj_bucket", record=point, org="moja_org")
+    
+
 app = Flask(__name__)
 
 if __name__ == "__main__":
@@ -143,6 +160,6 @@ if __name__ == "__main__":
     client = mqtt.Client(userdata = data )
     client.on_connect = on_connect
     client.on_message = on_message
-    client.connect("192.168.107.153", 1883, 60) #PROMENI NA IP UCIONICE
+    client.connect("localhost", 1883, 60) #PROMENI NA IP UCIONICE
 
     client.loop_forever()

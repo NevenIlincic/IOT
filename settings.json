@@ -15,10 +15,23 @@
         "activated": true
     },
     "DHT1": {
-        "name": "dht",
+        "name": "dht_1",
         "simulated": true,
         "pin": 5,
         "delay": 3
+    },
+
+    "DHT2": {
+        "name": "dht_2",
+        "simulated": true,
+        "pin": 5,
+        "delay": 4
+    },
+    "DHT3": {
+        "name": "dht_3",
+        "simulated": true,
+        "pin": 5,
+        "delay": 4
     },
     "DS": {
         "simulated": true,

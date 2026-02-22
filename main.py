@@ -25,7 +25,7 @@ from components.dl import run_dl
 from components.dms import run_dms
 from components.db import run_db
 from components.dht import run_dht
-# from components.gyro import run_gyro
+from components.gyro import run_gyro
 from components.lcd import run_lcd
 from components.ir import run_ir
 
@@ -72,10 +72,12 @@ if __name__ == "__main__":
     stop_event = threading.Event()
     try:
         mqtt_client = mqtt.Client()
-        mqtt_client.connect("192.168.107.153", 1883, 60)
+        mqtt_client.connect("localhost", 1883, 60) #192.168.107.153
         mqtt_client.loop_start()
         
         dht1_settings = settings['DHT1']
+        dht2_settings = settings['DHT2']
+        dht3_settings = settings['DHT3']
         alarm_settings = settings["ALARM"]
         ds1_settings = settings['DS']
         dus_settings = settings['DUS']
@@ -93,7 +95,9 @@ if __name__ == "__main__":
         security_system = SecuritySystem()
         
         dht_lct_shared_dict = {
-            "dht": [20, 20] #1. Temperatura, 2. Humidity
+            "dht_1": [20, 20],
+            "dht_2": [15,15],
+            "dht_3": [10,10]#1. Temperatura, 2. Humidity
         }
         #db = DB(db_settings, batch)
         # dl = DL(dl_settings, batch)
@@ -105,8 +109,11 @@ if __name__ == "__main__":
         # run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
         #run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)
         run_dht(dht1_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
+        run_dht(dht2_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
+        run_dht(dht3_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
+        
         #run_gyro(gyro_settings, threads, stop_event, data_lock, batch)
-        #run_lcd(lcd_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
+        run_lcd(lcd_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
         #run_ir(mqtt_client, ir_settings, threads, stop_event, rgb_settings)
         
         
