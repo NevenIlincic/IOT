@@ -78,7 +78,7 @@ class IR(object):
 #                 if (hex(ir.Buttons[button]) in ["0", "1", "2", "3", "4", "5", "6", "7"]):
 #                     callback(mqtt_client, ir_settings, stop_event, hex(ir.Buttons[button]))
 
-def run_ir_loop(mqtt_client, ir: IR, ir_settings, stop_event, callback, rgb_settings): 
+def run_ir_loop(mqtt_client, ir: IR, ir_settings, stop_event, callback, rgb, rgb_settings): 
     while not stop_event.is_set():
         # 1. Uzmi binarnu vrednost i konvertuj u HEX
         binary_val = ir.getBinary()
@@ -97,4 +97,4 @@ def run_ir_loop(mqtt_client, ir: IR, ir_settings, stop_event, callback, rgb_sett
                 # 3. Ako je pritisnuto dugme koje je broj (0-7), pošalji taj broj
                 if button_name in ["0", "1", "2", "3", "4", "5", "6", "7"]:
                     # Ovde šalješ "0", "1" itd. kao string, što tvoj callback očekuje
-                    callback(mqtt_client, ir_settings, None, rgb_settings, stop_event, button_name)
+                    callback(mqtt_client, ir_settings, rgb, rgb_settings, stop_event, button_name)

@@ -111,6 +111,7 @@ def on_message(client, userdata, msg):
                 write_api.write(bucket="moj_bucket", record=point, org="moja_org")
                 
             case "alarm":
+                print(payload)
                 measurment_time = datetime.fromtimestamp(payload['timestamp'], tz=timezone.utc)
                 point = Point("ALARM") \
                 .tag("name", payload["name"]) \

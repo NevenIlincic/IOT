@@ -103,7 +103,6 @@ if __name__ == "__main__":
         sd_settings = settings["4SD"]
         # run_dht(dht1_settings, threads, stop_event)
         
-        alarm = Alarm(mqtt_client, alarm_settings)
         security_system = SecuritySystem()
         
         dht_lct_shared_dict = {
@@ -123,13 +122,18 @@ if __name__ == "__main__":
         if not dl_settings["simulated"]:
             from sensors.dl import DL
             dl = DL(dl_settings, batch)
+        rgb = None
+        if not settings["RGB"]["simulated"]:
+            from sensors.rgb import RGB
+            rgb = RGB(settings["RGB"])
         
+        alarm = Alarm(mqtt_client, alarm_settings, db)
         #run_ds(ds1_settings, batch, data_lock, threads, stop_event)
         #run_ds(ds2_settings, batch, data_lock, threads, stop_event)
         #run_ds(btn_settings, batch, data_lock, threads, stop_event, sd_settings)
         #run_dus(dus1_settings, threads, stop_event, batch, data_lock)
         #run_dus(dus2_settings, threads, stop_event, batch, data_lock)
-        run_dpir(dpir1_settings, threads, stop_event, batch, data_lock, dl, dl_settings) ## AKO NIJE SIMULIRAN UREDJAJ PROSLEDITI Pravi DL objekat !!!!
+        #run_dpir(dpir1_settings, threads, stop_event, batch, data_lock, dl, dl_settings) ## AKO NIJE SIMULIRAN UREDJAJ PROSLEDITI Pravi DL objekat !!!!
         #run_dpir(dpir2_settings, threads, stop_event, batch, data_lock, None, dl_settings)
        # run_dpir(dpir3_settings, threads, stop_event, batch, data_lock, None, dl_settings)
         #run_db(db, db_settings, batch, data_lock, threads, stop_event)
@@ -141,7 +145,7 @@ if __name__ == "__main__":
         
         #run_gyro(gyro_settings, threads, stop_event, data_lock, batch)
        # run_lcd(lcd_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
-        #run_ir(mqtt_client, ir_settings, threads, stop_event, rgb_settings)
+        run_ir(mqtt_client, ir_settings, threads, stop_event, rgb, rgb_settings)
         
         
         batch_thread =  threading.Thread(target=fill_batch, args=(mqtt_client, batch, data_lock, settings))
@@ -151,7 +155,7 @@ if __name__ == "__main__":
         # run_dl1(dl1_settings, threads, stop_event)
         # run_dms(dms_settings, threads, stop_event)
         
-        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client,data_lock, batch, settings, stop_event, db, dl, alarm, security_system, threads), daemon=True)
+        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client,data_lock, batch, settings, stop_event, db, dl, rgb, alarm, security_system, threads), daemon=True)
         cli_thread.start()
         threads.append(cli_thread)
 

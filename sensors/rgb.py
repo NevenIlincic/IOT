@@ -20,31 +20,30 @@ class RGB(object):
         GPIO.setup(self.BLUE_PIN, GPIO.OUT)
     
     def change_color(self, value):
-        match value:
-            case "0":
-                self.turnOff()
-                self.value = RGBColor.OFF
-            case "1":
-                self.white()
-                self.value = RGBColor.WHITE
-            case "2":
-                self.red()
-                self.value = RGBColor.RED
-            case "3":
-                self.green()
-                self.value = RGBColor.GREEN
-            case "4":
-                self.blue()
-                self.value = RGBColor.BLUE
-            case "5":
-                self.yellow()
-                self.value = RGBColor.YELLOW
-            case "6":
-                self.purple()
-                self.value = RGBColor.PURPLE
-            case "7":
-                self.lightBlue()
-                self.value = RGBColor.LIGHT_BLUE
+        if value == "0":
+            self.turnOff()
+            self.value = RGBColor.OFF
+        elif value == "1":
+            self.white()
+            self.value = RGBColor.WHITE
+        elif value == "2":
+            self.red()
+            self.value = RGBColor.RED
+        elif value == "3":
+            self.green()
+            self.value = RGBColor.GREEN
+        elif value == "4":
+            self.blue()
+            self.value = RGBColor.BLUE
+        elif value == "5":
+            self.yellow()
+            self.value = RGBColor.YELLOW
+        elif value == "6":
+            self.purple()
+            self.value = RGBColor.PURPLE
+        elif value == "7":
+            self.lightBlue()
+            self.value = RGBColor.LIGHT_BLUE
 
     def turnOff(self):
         GPIO.output(self.RED_PIN, GPIO.LOW)

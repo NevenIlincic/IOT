@@ -54,7 +54,7 @@ def ir_callback(mqtt_client, ir_settings, rgb, rgb_settings, stop_event, value):
         #         rgb_value = RGBColor.LIGHT_BLUE
         rgb_callback(mqtt_client, rgb_settings, stop_event, rgb_value)
 
-def run_ir(mqtt_client, ir_settings, threads, stop_event, rgb_settings):
+def run_ir(mqtt_client, ir_settings, threads, stop_event, rgb, rgb_settings):
         if ir_settings['simulated']:
             print("Starting IR simulator")
             # dus1_thread = threading.Thread(target = run_dus_simulator, args=(dus_settings, data_lock, batch, dus_callback, stop_event), daemon=True)
@@ -65,7 +65,7 @@ def run_ir(mqtt_client, ir_settings, threads, stop_event, rgb_settings):
             from sensors.ir import run_ir_loop, IR 
             print("Starting IR loop")
             ir = IR(ir_settings)
-            ir_thread = threading.Thread(target=run_ir_loop, args=(mqtt_client, ir, ir_settings, stop_event, ir_callback, rgb_settings))
+            ir_thread = threading.Thread(target=run_ir_loop, args=(mqtt_client, ir, ir_settings, stop_event, ir_callback, rgb, rgb_settings))
             ir_thread.start()
             threads.append(ir_thread)
             print("IR loop started")

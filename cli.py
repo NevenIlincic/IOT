@@ -13,15 +13,10 @@ from enum import Enum
 from enums import State
 from enums import Buzzing
 from enums import DoorLightState
-# from sensors.rgb import RGB
 
-def run_cli(mqtt_client, data_lock, batch, settings, stop_event, db, dl, alarm, security_system, threads):
+def run_cli(mqtt_client, data_lock, batch, settings, stop_event, db, dl, rgb, alarm, security_system, threads):
     dms_settings = settings['DMS']
     
-    rgb = None
-    if not settings["RGB"]["simulated"]:
-        pass
-        #rgb = RGB(settings["RGB"])
     session = None
     smart_print_enabled = settings['PRINT']['activated']
     if smart_print_enabled:

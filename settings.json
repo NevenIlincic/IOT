@@ -129,7 +129,7 @@
     },
 
     "RGB": {
-        "simulated": true,
+        "simulated": false,
         "RED_PIN": 12,
         "GREEN_PIN": 13,
         "BLUE_PIN": 19,

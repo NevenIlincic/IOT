@@ -26,9 +26,7 @@ def run_db(db, settings, batch, data_lock, threads, stop_event):
         threads.append(dht1_thread)
         print("Dht1 sumilator started")
     else:
-        from sensors.db import run_db_loop, DB
-        print("Starting DB loop")
-        db = DB(settings, batch)
+        from sensors.db import run_db_loop
         ds_thread = threading.Thread(target=run_db_loop, args=(db, settings, data_lock, batch, stop_event, db_callback), daemon=True)
         ds_thread.start()
         threads.append(ds_thread)
