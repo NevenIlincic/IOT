@@ -15,7 +15,7 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as subscribe
 
 influx_config = {
-    "url": "http://192.168.107.153:8087", ##PROMENI NA IP UCIONICE
+    "url": "http://localhost:8087", ##PROMENI NA IP UCIONICE
     "token": "my-super-secret-token",
     "org": "moja_org",
     "bucket": "tvoj_bucket"
@@ -190,6 +190,6 @@ if __name__ == "__main__":
     client = mqtt.Client(userdata = data )
     client.on_connect = on_connect
     client.on_message = on_message
-    client.connect("192.168.107.153", 1883, 60) #PROMENI NA IP UCIONICE
+    client.connect("localhost", 1883, 60) #PROMENI NA IP UCIONICE
 
     client.loop_forever()

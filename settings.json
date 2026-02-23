@@ -1,6 +1,8 @@
 {
     "topic": "devices",
 
+    "people": 0,
+
     "ALARM": {
         "name": "alarm",
         "topic": "devices"
@@ -71,7 +73,10 @@
         "name": "dus_1",
         "topic": "device/dus",
         "TRIG_PIN": 23,
-        "ECHO_PIN": 24
+        "ECHO_PIN": 24,
+        "start_distance": 0.0,
+        "end_distance": 0.0,
+        "last_distance": 0.0
     },
     "DUS2": {
         "simulated": true,
@@ -80,7 +85,10 @@
         "name": "dus_2",
         "topic": "device/dus",
         "TRIG_PIN": 23,
-        "ECHO_PIN": 24
+        "ECHO_PIN": 24,
+        "start_distance": 0.0,
+        "end_distance": 0.0,
+        "last_distance": 0.0
     },
     "DB": {
         "simulated": true,
@@ -129,7 +137,7 @@
     },
 
     "RGB": {
-        "simulated": false,
+        "simulated": true,
         "RED_PIN": 12,
         "GREEN_PIN": 13,
         "BLUE_PIN": 19,

@@ -12,6 +12,7 @@ class Alarm(object):
         
     
     def turn_off(self):
+        print("ALARM ISKLJUCEN!")
         if not self.db is None:
             self.db.toggle_buzz(False)
         self.value = AlarmState.NOT_ACTIVE
@@ -23,6 +24,7 @@ class Alarm(object):
         self.mqtt_client.publish(self.settings["topic"], json.dumps(data_to_send))
     
     def turn_on(self):
+        print("ALARM UKLJUCEN!")
         if not self.db is None:
             self.db.toggle_buzz(True)
         self.value = AlarmState.ACTIVE

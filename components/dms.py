@@ -14,7 +14,7 @@ def dms_callback(mqtt_client, settings, value, alarm: Alarm, security_system: Se
         print(security_system.value == State.OFF)
         if security_system.value == State.OFF:
             if alarm.value == AlarmState.ACTIVE:
-                alarm.value = AlarmState.NOT_ACTIVE
+                alarm.turn_off()
             else:
                 time.sleep(10)
                 security_system.value = State.ON
