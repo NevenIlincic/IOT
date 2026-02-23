@@ -91,7 +91,7 @@
     },
     "DPIR1": {
         "simulated": true,
-        "pin": 13,
+        "pin": 17,
         "delay": 3,
         "topic": "device/dpir",
         "name": "dpir_1"

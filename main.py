@@ -72,7 +72,7 @@ if __name__ == "__main__":
     stop_event = threading.Event()
     try:
         mqtt_client = mqtt.Client()
-        mqtt_client.connect("localhost", 1883, 60) #192.168.107.153
+        mqtt_client.connect("192.168.107.153", 1883, 60) #192.168.107.153
         mqtt_client.loop_start()
         
         dht1_settings = settings['DHT1']
@@ -115,17 +115,23 @@ if __name__ == "__main__":
         time_counter = 0
         is_blinking = False
         
-        #db = DB(db_settings, batch)
-        # dl = DL(dl_settings, batch)
+        db = None
+        if not db_settings["simulated"]:
+            from sensors.db import DB
+            db = DB(db_settings, batch)
+        dl = None
+        if not dl_settings["simulated"]:
+            from sensors.dl import DL
+            dl = DL(dl_settings, batch)
         
         #run_ds(ds1_settings, batch, data_lock, threads, stop_event)
         #run_ds(ds2_settings, batch, data_lock, threads, stop_event)
         #run_ds(btn_settings, batch, data_lock, threads, stop_event, sd_settings)
         #run_dus(dus1_settings, threads, stop_event, batch, data_lock)
         #run_dus(dus2_settings, threads, stop_event, batch, data_lock)
-        run_dpir(dpir1_settings, threads, stop_event, batch, data_lock, None, dl_settings) ## AKO NIJE SIMULIRAN UREDJAJ PROSLEDITI Pravi DL objekat !!!!
-        run_dpir(dpir2_settings, threads, stop_event, batch, data_lock, None, dl_settings)
-        run_dpir(dpir3_settings, threads, stop_event, batch, data_lock, None, dl_settings)
+        run_dpir(dpir1_settings, threads, stop_event, batch, data_lock, dl, dl_settings) ## AKO NIJE SIMULIRAN UREDJAJ PROSLEDITI Pravi DL objekat !!!!
+        #run_dpir(dpir2_settings, threads, stop_event, batch, data_lock, None, dl_settings)
+       # run_dpir(dpir3_settings, threads, stop_event, batch, data_lock, None, dl_settings)
         #run_db(db, db_settings, batch, data_lock, threads, stop_event)
         #run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
         #run_dms(mqtt_client, alarm, security_system, dms_settings, batch, data_lock, threads, stop_event)
@@ -145,7 +151,7 @@ if __name__ == "__main__":
         # run_dl1(dl1_settings, threads, stop_event)
         # run_dms(dms_settings, threads, stop_event)
         
-        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client,data_lock, batch, settings, stop_event, None, None, alarm, security_system, threads), daemon=True)
+        cli_thread = threading.Thread(target = run_cli, args=(mqtt_client,data_lock, batch, settings, stop_event, db, dl, alarm, security_system, threads), daemon=True)
         cli_thread.start()
         threads.append(cli_thread)
 

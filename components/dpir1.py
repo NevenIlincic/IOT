@@ -17,7 +17,8 @@ def dpir_callback(dpir_settings, dl, dl_settings, data_lock, batch, stop_event, 
     if dpir_settings["name"] == "dpir_1":
         if dl:
             if value == MotionDetected.DETECTED:
-                dl.toggle_light()
+                dl.toggle_light(data_lock, stop_event, dl_callback)
+                
         else:
             if value == MotionDetected.DETECTED:
                 dl_thread = threading.Thread(target = run_simulated_dl_thread, args=(dl_settings, data_lock, batch, stop_event), daemon=True)

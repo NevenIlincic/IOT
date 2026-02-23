@@ -14,11 +14,13 @@ class DL(object):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.PORT_BUZZER,GPIO.OUT)
         
-    def toggle_light(self):
+    def toggle_light(self, data_lock, stop_event, callback):
         GPIO.output(self.PORT_BUZZER,GPIO.HIGH) #Upaljen
         self.value = DoorLightState.ON
+        callback(self.settings, data_lock, self.batch, stop_event, self.value.name)
         time.sleep(10)
         self.value = DoorLightState.OFF
+        callback(self.settings, data_lock, self.batch, stop_event, self.value.name)
         GPIO.output(self.PORT_BUZZER,GPIO.LOW) #Ugasen
              
 def run_dl_loop(dl, settings, data_lock, batch, stop_event, callback):

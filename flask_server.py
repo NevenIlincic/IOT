@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
 import json
@@ -14,7 +15,7 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as subscribe
 
 influx_config = {
-    "url": "http://localhost:8087", ##PROMENI NA IP UCIONICE
+    "url": "http://192.168.107.153:8087", ##PROMENI NA IP UCIONICE
     "token": "my-super-secret-token",
     "org": "moja_org",
     "bucket": "tvoj_bucket"
@@ -34,6 +35,7 @@ def on_message(client, userdata, msg):
             
             match name:
                 case "dpir_1":
+                    print(single_data)
                     add_point("DPIR_1", single_data)
                 case "dpir_2":
                     add_point("DPIR_2", single_data)
@@ -161,6 +163,16 @@ def add_point_dht(measurment_name, single_data):
     
 
 app = Flask(__name__)
+CORS(app)
+
+# @app.route('/store_data', methods=['POST']) #GADJAM http://localhost:5050/ime_rute iz Angulara
+# def handle_store_data(): # Promenjeno ime ovde
+#     try:
+#         data = request.get_json()
+#         save_to_db(data) # Pretpostavljam da se prava funkcija za bazu zove ovako
+#         return jsonify({"status": "success"})
+#     except Exception as e:
+#         return jsonify({"status": "error", "message": str(e)})
 
 if __name__ == "__main__":
     print("FLASK POKRENUT...")
@@ -177,6 +189,6 @@ if __name__ == "__main__":
     client = mqtt.Client(userdata = data )
     client.on_connect = on_connect
     client.on_message = on_message
-    client.connect("localhost", 1883, 60) #PROMENI NA IP UCIONICE
+    client.connect("192.168.107.153", 1883, 60) #PROMENI NA IP UCIONICE
 
     client.loop_forever()
