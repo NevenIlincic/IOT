@@ -133,9 +133,9 @@ if __name__ == "__main__":
             rgb = RGB(settings["RGB"])
         
         alarm = Alarm(mqtt_client, alarm_settings, db)
-        run_ds(ds1_settings, batch, data_lock, threads, stop_event, alarm)
-        run_ds(ds2_settings, batch, data_lock, threads, stop_event, alarm)
-        #run_ds(btn_settings, batch, data_lock, threads, stop_event, sd_settings, alarm)
+        run_ds(ds1_settings, batch, data_lock, threads, stop_event, alarm, security_system)
+        run_ds(ds2_settings, batch, data_lock, threads, stop_event, alarm, security_system)
+        #run_ds(btn_settings, batch, data_lock, threads, stop_event, sd_settings, alarm, security_system)
         #run_dus(dus1_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
         #run_dus(dus2_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
         #run_dpir(dpir1_settings, threads, stop_event, batch, data_lock, dl, dl_settings, dus1_settings, dpir_dus_shared_dict, settings, alarm) ## AKO NIJE SIMULIRAN UREDJAJ PROSLEDITI Pravi DL objekat !!!!

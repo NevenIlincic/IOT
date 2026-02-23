@@ -23,9 +23,9 @@ def generate_values(initial_state = DoorState.CLOSED, is_kitchen_button = True):
             state = DoorState.CLOSED
         yield state
 
-def run_ds1_simulator(settings, data_lock, batch, stop_event, callback, alarm):
+def run_ds1_simulator(settings, data_lock, batch, stop_event, callback, alarm, security_system):
     for state in generate_values(is_kitchen_button=settings["kitchen_button"]):
-        callback(settings, data_lock, batch, stop_event, state.name, alarm)
+        callback(settings, data_lock, batch, stop_event, state.name, alarm, security_system)
         time.sleep(settings['delay'])
         if stop_event.is_set():
             break
