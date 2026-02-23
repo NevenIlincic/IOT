@@ -32,9 +32,9 @@ class DS(object):
     # def button_released(self, event):
     #     self.value = DoorState.CLOSED
 
-def run_ds_loop(ds, settings, data_lock, batch, stop_event, callback ):
+def run_ds_loop(ds, settings, data_lock, batch, stop_event, callback, alarm ):
     while True:
-        callback(settings, data_lock, batch, stop_event, ds.value.name)
+        callback(settings, data_lock, batch, stop_event, ds.value.name, alarm)
         time.sleep(settings["delay"])
     
     

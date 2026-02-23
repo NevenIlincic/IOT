@@ -92,7 +92,7 @@ def run_dpir(settings, threads, stop_event, batch, data_lock, dl, dl_settings, d
         from sensors.dpir import run_dpir_loop, DPIR
         print("Starting DPIR loop")
         dpir = DPIR(settings)
-        dpir_thread = threading.Thread(target=run_dpir_loop, args=(dpir, settings, data_lock, batch, stop_event, dpir_callback, dl, dl_settings), daemon=True)
+        dpir_thread = threading.Thread(target=run_dpir_loop, args=(dpir, settings, data_lock, batch, stop_event, dpir_callback, dl, dl_settings, dus_settings, dpir_dus_shared_dict, all_settings, alarm), daemon=True)
         dpir_thread.start()
         threads.append(dpir_thread)
         print("DPIR loop started")

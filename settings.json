@@ -41,7 +41,8 @@
         "delay": 5,
         "name": "ds_1",
         "topic": "device/ds",
-        "kitchen_button": false
+        "kitchen_button": false,
+        "start_time": null
     },
     "DS2": {
         "simulated": true,
@@ -49,7 +50,8 @@
         "delay": 5,
         "name": "ds_2",
         "topic": "device/ds",
-        "kitchen_button": false
+        "kitchen_button": false,
+        "start_time": null
     },
     "BTN": { 
         "simulated": true,

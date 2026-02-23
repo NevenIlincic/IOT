@@ -133,13 +133,13 @@ if __name__ == "__main__":
             rgb = RGB(settings["RGB"])
         
         alarm = Alarm(mqtt_client, alarm_settings, db)
-        #run_ds(ds1_settings, batch, data_lock, threads, stop_event)
-        #run_ds(ds2_settings, batch, data_lock, threads, stop_event)
-        #run_ds(btn_settings, batch, data_lock, threads, stop_event, sd_settings)
-        run_dus(dus1_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
-        run_dus(dus2_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
-        run_dpir(dpir1_settings, threads, stop_event, batch, data_lock, dl, dl_settings, dus1_settings, dpir_dus_shared_dict, settings, alarm) ## AKO NIJE SIMULIRAN UREDJAJ PROSLEDITI Pravi DL objekat !!!!
-        run_dpir(dpir2_settings, threads, stop_event, batch, data_lock, None, dl_settings, dus2_settings, dpir_dus_shared_dict, settings, alarm)
+        run_ds(ds1_settings, batch, data_lock, threads, stop_event, alarm)
+        run_ds(ds2_settings, batch, data_lock, threads, stop_event, alarm)
+        #run_ds(btn_settings, batch, data_lock, threads, stop_event, sd_settings, alarm)
+        #run_dus(dus1_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
+        #run_dus(dus2_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
+        #run_dpir(dpir1_settings, threads, stop_event, batch, data_lock, dl, dl_settings, dus1_settings, dpir_dus_shared_dict, settings, alarm) ## AKO NIJE SIMULIRAN UREDJAJ PROSLEDITI Pravi DL objekat !!!!
+        #run_dpir(dpir2_settings, threads, stop_event, batch, data_lock, None, dl_settings, dus2_settings, dpir_dus_shared_dict, settings, alarm)
        # run_dpir(dpir3_settings, threads, stop_event, batch, data_lock, None, dl_settings)
         #run_db(db, db_settings, batch, data_lock, threads, stop_event)
         #run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)

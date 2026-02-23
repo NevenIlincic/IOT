@@ -4,14 +4,30 @@ import threading
 import time
 import random
 from enum import Enum
-        
-def ds_callback(settings, data_lock, batch, stop_event, value):
+from enums import AlarmState
+
+def ds_callback(settings, data_lock, batch, stop_event, value, alarm):
     payload = {
         "name": settings["name"],
         "value": value,
         "simulated": settings["simulated"],
         "timestamp": time.time()
     }
+    
+    if settings["name"] == "ds_1" or settings["name"] == "ds_2":
+        if value == "CLOSED":
+            if settings["start_time"]:
+                if alarm.value == AlarmState.ACTIVE and (time.time() - settings["start_time"] > 5):
+                    alarm.turn_off()
+
+            settings["start_time"] = None
+        else:
+            if settings["start_time"] is None:
+                settings["start_time"] = time.time()
+            else:
+                if time.time() - settings["start_time"] > 5:
+                    alarm.turn_on()
+                
     
     with data_lock:
         batch.append(payload)
@@ -30,10 +46,10 @@ def ds_callback(settings, data_lock, batch, stop_event, value):
 
 
 
-def run_ds(settings, batch, data_lock, threads, stop_event, sd_settings=None):
+def run_ds(settings, batch, data_lock, threads, stop_event, alarm, sd_settings=None):
         if settings['simulated']:
             print("Starting" + settings["name"] + " simulator")
-            ds1_thread = threading.Thread(target = run_ds1_simulator, args=(settings, data_lock, batch, stop_event, ds_callback ), daemon=True)
+            ds1_thread = threading.Thread(target = run_ds1_simulator, args=(settings, data_lock, batch, stop_event, ds_callback, alarm ), daemon=True)
             ds1_thread.start()
             threads.append(ds1_thread)
             print(settings["name"] + " simulator started")
@@ -41,7 +57,7 @@ def run_ds(settings, batch, data_lock, threads, stop_event, sd_settings=None):
             from sensors.ds import run_ds_loop, DS
             print("Starting DS loop")
             ds = DS(settings, batch, sd_settings)
-            ds_thread = threading.Thread(target=run_ds_loop, args=(ds, settings, data_lock, batch, stop_event, ds_callback), daemon=True)
+            ds_thread = threading.Thread(target=run_ds_loop, args=(ds, settings, data_lock, batch, stop_event, ds_callback, alarm), daemon=True)
             ds_thread.start()
             threads.append(ds_thread)
             print("DS loop started")
