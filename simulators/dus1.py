@@ -8,7 +8,7 @@ def generate_values(initial_distance = 50.0):
       while True:
             distance += float(random.randint(-150, 150 )) / 10
             if distance < 0:
-                  distance = 0
+                  distance = 0.0
             yield round(distance, 1)
 
       

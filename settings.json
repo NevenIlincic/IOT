@@ -157,7 +157,9 @@
     "GYRO": {
         "simulated": true,
         "name": "gyroscope",
-        "delay": 3
+        "delay": 3,
+        "last_acceleration_value": 0.0,
+        "last_rotation_value": 0.0
     },
 
     "LCD": {

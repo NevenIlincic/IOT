@@ -18,9 +18,9 @@ def generate_values():
             
         yield activity, rotation
 
-def run_gyro_simulator(gyro_settings, data_lock, batch, callback, stop_event):
+def run_gyro_simulator(gyro_settings, data_lock, batch, callback, stop_event, alarm):
     for activity, rotation in generate_values():
-        callback(gyro_settings, data_lock, batch, rotation, activity, stop_event)
+        callback(gyro_settings, data_lock, batch, rotation, activity, stop_event, alarm)
         
         time.sleep(gyro_settings["delay"])
         if stop_event.is_set():
