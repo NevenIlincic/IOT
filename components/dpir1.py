@@ -73,7 +73,11 @@ def dpir_callback(dpir_settings, dl, dl_settings, data_lock, batch, stop_event, 
                         print("DUS_2",all_settings["people"], start_distance, end_distance)
                     else:
                         alarm.turn_on() 
-    
+                        
+    if dpir_settings["name"] == "dpir_3":
+        if value == MotionDetected.DETECTED and all_settings["people"] == 0:
+            alarm.turn_on()
+            
     with data_lock:
             batch.append(payload)
             
