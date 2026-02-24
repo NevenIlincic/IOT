@@ -79,7 +79,14 @@ def dpir_callback(dpir_settings, dl, dl_settings, data_lock, batch, stop_event, 
             alarm.turn_on()
             
     with data_lock:
-            batch.append(payload)
+        ##
+        num_people_data = {
+            "name": "people",
+            "num_people": all_settings["people"]
+        }
+        batch.append(num_people_data)
+        ##
+        batch.append(payload)
             
     if stop_event.is_set():
         return

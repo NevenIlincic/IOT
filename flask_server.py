@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
@@ -21,13 +21,21 @@ influx_config = {
     "bucket": "tvoj_bucket"
 }
 
+client = None
+system_status_storage = {
+    "alarm_state": "NOT_ACTIVE",
+    "num_people": 0
+}
+
 def on_connect(client, userdata, flags, rc):
     client.subscribe("devices")
+    client.subscribe("people_in_system")
 
 def on_message(client, userdata, msg):
     #print(msg.topic+" "+msg.payload.decode("utf-8"))
     topic = msg.topic
     payload = json.loads(msg.payload.decode("utf-8"))
+    
     
     if type(payload) == list:
         for single_data in payload:
@@ -68,15 +76,6 @@ def on_message(client, userdata, msg):
                     add_point("LCD", single_data)
                 case "dht_1":
                     add_point_dht("DHT_1", single_data)
-                    # measurment_time = datetime.fromtimestamp(single_data['timestamp'], tz=timezone.utc)
-                    # point = Point("DHT") \
-                    # .tag("name", single_data["name"]) \
-                    # .field("simulated", single_data["simulated"]) \
-                    # .field("temperature", single_data["temperature"])\
-                    # .field("humidity", single_data["humidity"])\
-                    # .time(measurment_time)
-            
-                    # write_api.write(bucket="moj_bucket", record=point, org="moja_org")
                 case "dht_2":
                     add_point_dht("DHT_2", single_data)
                 case "dht_3":
@@ -96,6 +95,10 @@ def on_message(client, userdata, msg):
                     print(single_data)
                     add_point("4SD", single_data)
                     
+                case "people":
+                    print(single_data["num_people"])
+                    system_status_storage["num_people"] = single_data["num_people"]
+                    
     elif type(payload) == dict:
         name = payload["name"]
         match name:
@@ -112,6 +115,8 @@ def on_message(client, userdata, msg):
                 
             case "alarm":
                 print(payload)
+                system_status_storage["alarm_state"] = payload["value"]
+                
                 measurment_time = datetime.fromtimestamp(payload['timestamp'], tz=timezone.utc)
                 point = Point("ALARM") \
                 .tag("name", payload["name"]) \
@@ -141,6 +146,7 @@ def on_message(client, userdata, msg):
             
                 write_api.write(bucket="moj_bucket", record=point, org="moja_org")
                 
+                
 def add_point(measurment_name, data):
     measurment_time = datetime.fromtimestamp(data['timestamp'], tz=timezone.utc)
     point = Point(measurment_name) \
@@ -166,14 +172,56 @@ def add_point_dht(measurment_name, single_data):
 app = Flask(__name__)
 CORS(app)
 
-# @app.route('/store_data', methods=['POST']) #GADJAM http://localhost:5050/ime_rute iz Angulara
-# def handle_store_data(): # Promenjeno ime ovde
-#     try:
-#         data = request.get_json()
-#         save_to_db(data) # Pretpostavljam da se prava funkcija za bazu zove ovako
-#         return jsonify({"status": "success"})
-#     except Exception as e:
-#         return jsonify({"status": "error", "message": str(e)})
+@app.route('/dms_input', methods=['POST']) #GADJAM http://localhost:5050/ime_rute iz Angulara
+def handle_dms_input(): # Promenjeno ime ovde
+    global client
+    try:
+        data = request.get_json()
+        client.publish("commands/dms", json.dumps(data))
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/set_rgb', methods=['POST']) #GADJAM http://localhost:5050/ime_rute iz Angulara
+def handle_rgb_input(): # Promenjeno ime ovde
+    global client
+    try:
+        data = request.get_json()
+        client.publish("commands/rgb", json.dumps(data))
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+@app.route('/start_kitchen_timer', methods=['POST']) #GADJAM http://localhost:5050/ime_rute iz Angulara
+def handle_start_kitchen_timer(): # Promenjeno ime ovde
+    global client
+    try:
+        data = request.get_json()
+        client.publish("commands/start_kitchen_timer", json.dumps(data))
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+    
+@app.route('/add_to_kitchen_timer', methods=['POST']) #GADJAM http://localhost:5050/ime_rute iz Angulara
+def handle_add_to_kitchen_timer(): # Promenjeno ime ovde
+    global client
+    try:
+        data = request.get_json()
+        client.publish("commands/add_to_kitchen_timer", json.dumps(data))
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/system_status', methods=['GET']) #GADJAM http://localhost:5050/ime_rute iz Angulara
+def handle_system_status(): # Promenjeno ime ovde
+    global client
+    try:
+        return jsonify(system_status_storage)
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
 
 if __name__ == "__main__":
     print("FLASK POKRENUT...")
@@ -192,4 +240,7 @@ if __name__ == "__main__":
     client.on_message = on_message
     client.connect("localhost", 1883, 60) #PROMENI NA IP UCIONICE
 
-    client.loop_forever()
+    # client.loop_forever()
+    client.loop_start() # Pokreće MQTT u pozadinskom thread-u
+    
+    app.run(host="0.0.0.0", port=5050, debug=False)

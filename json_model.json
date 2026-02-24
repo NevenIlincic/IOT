@@ -18,8 +18,21 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
-  "links": [],
+  "id": 1,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "panels": [
     {
       "datasource": {
@@ -49,7 +62,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 2,
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -66,8 +79,6 @@
             }
           },
           "mappings": [],
-          "max": 80,
-          "min": 20,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -80,8 +91,7 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "cm"
+          }
         },
         "overrides": []
       },
@@ -91,7 +101,7 @@
         "x": 0,
         "y": 0
       },
-      "id": 7,
+      "id": 13,
       "options": {
         "legend": {
           "calcs": [],
@@ -108,47 +118,58 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"DUS\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: -1h)\r\n  |> filter(fn: (r) => r._measurement == \"GYROSCOPE\")\r\n  |> filter(fn: (r) => r._field == \"acceleration\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> sort(columns: [\"_time\"])",
           "refId": "A"
         }
       ],
-      "title": "Door Ultrasonic Sensor",
+      "title": "Gyroscope (Acceleration)",
       "type": "timeseries"
     },
     {
       "datasource": {
+        "type": "influxdb",
         "uid": "dfc5b6meby1ogf"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "footer": {
-              "reducers": []
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
             },
-            "inspect": false
-          },
-          "mappings": [
-            {
-              "options": {
-                "FAIL": {
-                  "color": "red",
-                  "index": 1
-                },
-                "SUCCESS": {
-                  "color": "green",
-                  "index": 0
-                }
-              },
-              "type": "value"
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
-          ],
+          },
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -163,22 +184,7 @@
             ]
           }
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "attempt"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -186,20 +192,29 @@
         "x": 12,
         "y": 0
       },
-      "id": 3,
+      "id": 12,
       "options": {
-        "cellHeight": "sm",
-        "showHeader": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"DMS\")\r\n  |> filter(fn: (r) => r._field == \"attempt\" or r._field == \"value\")\r\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")",
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: -1h)\r\n  |> filter(fn: (r) => r._measurement == \"GYROSCOPE\")\r\n  |> filter(fn: (r) => r._field == \"rotation\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> sort(columns: [\"_time\"])",
           "refId": "A"
         }
       ],
-      "title": "Door Membrane Switch (ATTEMPTS)",
-      "type": "table"
+      "title": "Gyroscope (Rotation)",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -226,13 +241,14 @@
           "mappings": [
             {
               "options": {
-                "LOCKED": {
-                  "color": "blue",
+                "ACTIVE": {
+                  "color": "red",
                   "index": 0
                 },
-                "UNLOCKED": {
-                  "color": "#ffffff",
-                  "index": 1
+                "NOT_ACTIVE": {
+                  "color": "green",
+                  "index": 1,
+                  "text": "NOT ACTIVE"
                 }
               },
               "type": "value"
@@ -260,7 +276,7 @@
         "x": 0,
         "y": 8
       },
-      "id": 4,
+      "id": 8,
       "options": {
         "alignValue": "left",
         "legend": {
@@ -280,11 +296,11 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DMS\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"ALARM\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
           "refId": "A"
         }
       ],
-      "title": "Door Membrane Switch",
+      "title": "Alarm",
       "type": "state-timeline"
     },
     {
@@ -388,6 +404,67 @@
           "color": {
             "mode": "thresholds"
           },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 19,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^value 4sd$/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: -1h)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"4SD\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\r\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "4SD",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "custom": {
             "axisPlacement": "auto",
             "fillOpacity": 70,
@@ -403,12 +480,944 @@
           "mappings": [
             {
               "options": {
-                "Light OFF!": {
+                "BLUE": {
+                  "color": "#0000ff",
+                  "index": 4
+                },
+                "GREEN": {
+                  "color": "#00ff00",
+                  "index": 3
+                },
+                "LIGHT_BLUE": {
+                  "color": "#00ffff",
+                  "index": 7,
+                  "text": "LIGHT BLUE"
+                },
+                "OFF": {
+                  "color": "#000000",
+                  "index": 0
+                },
+                "PURPLE": {
+                  "color": "#ff00ff",
+                  "index": 6
+                },
+                "RED": {
+                  "color": "#ff0000",
+                  "index": 2
+                },
+                "WHITE": {
+                  "color": "#ffffff",
+                  "index": 1
+                },
+                "YELLOW": {
+                  "color": "#ffff00",
+                  "index": 5
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 10,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: -1h)\r\n  |> filter(fn: (r) => r._measurement == \"RGB\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> sort(columns: [\"_time\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "Bedroom RGB",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: -1h)\r\n  |> filter(fn: (r) => r._measurement == \"IR\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> sort(columns: [\"_time\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "Bedroom Infrared",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Value": "Button Pressed"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "FAIL": {
+                  "color": "red",
+                  "index": 1
+                },
+                "SUCCESS": {
+                  "color": "green",
+                  "index": 0
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "attempt"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"DMS\")\r\n  |> filter(fn: (r) => r._field == \"attempt\" or r._field == \"value\")\r\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Door Membrane Switch (ATTEMPTS)",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 14,
+      "options": {
+        "inlineEditing": true,
+        "panZoom": false,
+        "root": {
+          "background": {
+            "color": {
+              "fixed": "transparent"
+            }
+          },
+          "border": {
+            "color": {
+              "fixed": "dark-green"
+            }
+          },
+          "constraint": {
+            "horizontal": "left",
+            "vertical": "top"
+          },
+          "elements": [
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "_value",
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 32,
+                "text": {
+                  "field": "_value",
+                  "fixed": "${__value.text}",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "center",
+                "vertical": "center"
+              },
+              "links": [],
+              "name": "Element 1",
+              "placement": {
+                "height": 225,
+                "left": -3,
+                "rotation": 0,
+                "top": 8.893753051757812,
+                "width": 338
+              },
+              "type": "text"
+            }
+          ],
+          "name": "Element 1771368837786",
+          "placement": {
+            "height": 100,
+            "left": 0,
+            "rotation": 0,
+            "top": 0,
+            "width": 100
+          },
+          "type": "frame"
+        },
+        "showAdvancedTypes": true,
+        "tooltip": {
+          "disableForOneClick": false,
+          "mode": "single"
+        },
+        "zoomToContent": false
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: -1h)\r\n  |> filter(fn: (r) => r._measurement == \"LCD\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_value\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "Living room Display (LCD)",
+      "type": "canvas"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "humidity"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Humidity"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Temperature"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 18,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"DHT_3\")\r\n  |> filter(fn: (r) => r._field == \"humidity\" or r._field == \"temperature\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Kitchen DHT",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "humidity"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Humidity"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Temperature"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"DHT_1\")\r\n  |> filter(fn: (r) => r._field == \"humidity\" or r._field == \"temperature\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Bedroom DHT",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "DETECTED": {
+                  "color": "dark-red",
+                  "index": 0
+                },
+                "NOT_DETECTED": {
+                  "color": "#cac7c7",
+                  "index": 1,
+                  "text": "NOT DETECTED"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 40
+      },
+      "id": 5,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DPIR_1\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Door Motion Sensor 1",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "humidity"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Humidity"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Temperature"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 48
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"DHT_2\")\r\n  |> filter(fn: (r) => r._field == \"humidity\" or r._field == \"temperature\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Master Bedroom DHT",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "DETECTED": {
+                  "color": "dark-red",
+                  "index": 0
+                },
+                "NOT_DETECTED": {
+                  "color": "#cac7c7",
+                  "index": 1,
+                  "text": "NOT DETECTED"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 48
+      },
+      "id": 22,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DPIR_2\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Door Motion Sensor 2",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "OFF": {
                   "color": "#333333",
                   "index": 1,
                   "text": "OFF"
                 },
-                "Light ON!": {
+                "ON": {
                   "color": "yellow",
                   "index": 0,
                   "text": "ON"
@@ -437,7 +1446,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 56
       },
       "id": 2,
       "options": {
@@ -524,9 +1533,9 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 56
       },
-      "id": 5,
+      "id": 23,
       "options": {
         "alignValue": "left",
         "legend": {
@@ -546,11 +1555,99 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DPIR\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DPIR_3\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
           "refId": "A"
         }
       ],
-      "title": "Door Motion Sensor",
+      "title": "Door Motion Sensor 3",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "SYSTEM ACTIVATED": {
+                  "color": "blue",
+                  "index": 0,
+                  "text": "ACTIVE"
+                },
+                "SYSTEM DEACTIVATED": {
+                  "color": "#ffffff",
+                  "index": 1,
+                  "text": "NOT ACTIVE"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 64
+      },
+      "id": 4,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DMS\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Door Membrane Switch (Security System)",
       "type": "state-timeline"
     },
     {
@@ -609,8 +1706,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 24
+        "x": 12,
+        "y": 64
       },
       "id": 6,
       "options": {
@@ -632,12 +1729,286 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DS\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DS_1\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
           "refId": "A"
         }
       ],
-      "title": "Door Sensor",
+      "title": "Door Sensor 1",
       "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 80,
+          "min": 20,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "cm"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 72
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"DUS_1\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Door Ultrasonic Sensor 1",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "CLOSED": {
+                  "color": "#ffffff",
+                  "index": 1
+                },
+                "OPEN": {
+                  "color": "#013584",
+                  "index": 0
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 72
+      },
+      "id": 20,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) // Koristi Grafana varijable\r\n  |> filter(fn: (r) => r._measurement == \"DS_2\")\r\n  |> filter(fn: (r) => r._field == \"value\")\r\n  |> keep(columns: [\"_time\", \"_value\"])\r\n  |> yield(name: \"raw_data\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Door Sensor 2",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfc5b6meby1ogf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 80,
+          "min": 20,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "cm"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 80
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "query": "from(bucket: \"moj_bucket\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"DUS_2\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Door Ultrasonic Sensor 2",
+      "type": "timeseries"
     }
   ],
   "preload": false,
@@ -647,12 +2018,12 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "IOT_Dashboard",
   "uid": "adr6hq6",
-  "version": 13
+  "version": 60
 }

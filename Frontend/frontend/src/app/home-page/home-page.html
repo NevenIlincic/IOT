@@ -1,0 +1,57 @@
+<div class="dashboard-container">
+    @if (systemStatus.alarm_state == "ACTIVE") {
+    <div class="alarm-div">
+        <p>ALARM ACTIVE!</p>
+    </div>
+    }
+    <div class="cards">
+        <section class="control-panel">
+            <h3>Security System Control</h3>
+            <div class="input-group">
+                <input #pinInput type="password" maxlength="4" placeholder="Enter PIN">
+                <button (click)="sendPin(pinInput.value)">SEND PIN</button>
+            </div>
+            <div class="status-info">
+                <p>Status: <span [class.active]="systemArmed">{{ systemArmed ? 'ARMED' : 'DISARMED' }}</span></p>
+                <p>People in house: <strong>{{systemStatus.num_people}}</strong></p>
+            </div>
+        </section>
+
+        <section class="rgb-control">
+            <h3>RGB Light Control</h3>
+            <div class="color-grid">
+                <button (click)="setRGBByColor('1')" class="btn-color"
+                    style="background-color: white; color: black;">1</button>
+                <button (click)="setRGBByColor('2')" class="btn-color" style="background-color: red;">2</button>
+                <button (click)="setRGBByColor('3')" class="btn-color" style="background-color: green;">3</button>
+                <button (click)="setRGBByColor('4')" class="btn-color" style="background-color: blue;">4</button>
+                <button (click)="setRGBByColor('5')" class="btn-color"
+                    style="background-color: yellow; color: black;">5</button>
+                <button (click)="setRGBByColor('6')" class="btn-color" style="background-color: purple;">6</button>
+                <button (click)="setRGBByColor('7')" class="btn-color"
+                    style="background-color: cyan; color: black;">7</button>
+                <button (click)="setRGBByColor('0')" class="btn-color" style="background-color: black;">0</button>
+            </div>
+        </section>
+
+        <section class="timer-settings">
+            <h3>Kitchen Timer</h3>
+            <div class="timer-inputs">
+                <div class="input-field">
+                    <label><small>Minutes</small></label>
+                    <input #minVal type="number" min="0" max="60" value="0">
+                </div>
+                <div class="input-field">
+                    <label><small>Seconds</small></label>
+                    <input #secVal type="number" min="0" max="59" value="0">
+                </div>
+            </div>
+            <div class="timer-buttons">
+                <button (click)="setTimer(minVal.value, secVal.value)">Set Timer</button>
+                <button (click)="setN(10)" style="background-color: #6c757d;">Add 10 seconds</button>
+            </div>
+        </section>
+    </div>
+    <iframe src="http://localhost:3000/d/adr6hq6/iot-dashboard?orgId=1&from=now-5m&to=now&refresh=5s&kiosk" width="100%"
+        height="800px" frameborder="0"></iframe>
+</div>
