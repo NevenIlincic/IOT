@@ -24,7 +24,8 @@ influx_config = {
 client = None
 system_status_storage = {
     "alarm_state": "NOT_ACTIVE",
-    "num_people": 0
+    "num_people": 0,
+    "security_system_state": "SYSTEM NOT ACTIVE"
 }
 
 def on_connect(client, userdata, flags, rc):
@@ -103,6 +104,8 @@ def on_message(client, userdata, msg):
         name = payload["name"]
         match name:
             case "dms":
+                system_status_storage["security_system_state"] = payload["value"]
+                
                 measurment_time = datetime.fromtimestamp(payload['timestamp'], tz=timezone.utc)
                 point = Point("DMS") \
                 .tag("name", payload["name"]) \

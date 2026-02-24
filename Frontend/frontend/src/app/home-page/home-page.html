@@ -8,11 +8,11 @@
         <section class="control-panel">
             <h3>Security System Control</h3>
             <div class="input-group">
-                <input #pinInput type="password" maxlength="4" placeholder="Enter PIN">
-                <button (click)="sendPin(pinInput.value)">SEND PIN</button>
+                <input id="pinInput" #pinInput type="password" maxlength="4" placeholder="Enter PIN">
+                <button (click)="sendPin(pinInput)">SEND PIN</button>
             </div>
             <div class="status-info">
-                <p>Status: <span [class.active]="systemArmed">{{ systemArmed ? 'ARMED' : 'DISARMED' }}</span></p>
+                <p>Status: {{systemStatus.security_system_state}}</p>
                 <p>People in house: <strong>{{systemStatus.num_people}}</strong></p>
             </div>
         </section>
@@ -49,6 +49,13 @@
             <div class="timer-buttons">
                 <button (click)="setTimer(minVal.value, secVal.value)">Set Timer</button>
                 <button (click)="setN(10)" style="background-color: #6c757d;">Add 10 seconds</button>
+            </div>
+        </section>
+
+        <section class="camera-panel">
+            <h3>Live Camera Feed</h3>
+            <div class="video-wrapper">
+                <img [src]="cameraUrl" (error)="handleImageError($event)" alt="Live Feed">
             </div>
         </section>
     </div>

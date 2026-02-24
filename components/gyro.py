@@ -11,7 +11,7 @@ def gyro_callback(gyro_settings, data_lock, batch, rotation, activity, stop_even
         "timestamp": time.time()
     }
     
-    if abs(gyro_settings["last_acceleration_value"] - activity) > 50 or abs(gyro_settings["last_rotation_value"] - rotation) > 30:
+    if abs(gyro_settings["last_acceleration_value"] - activity) > 80 or abs(gyro_settings["last_rotation_value"] - rotation) > 50 :
         alarm.turn_on()
     
     gyro_settings["last_acceleration_value"] = activity

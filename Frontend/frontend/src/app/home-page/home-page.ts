@@ -21,13 +21,22 @@ export class HomePage {
   private statusSubscription?: Subscription;
   public systemStatus: any = {
     alarm_state: "NOT_ACTIVE",
-    num_people: 0
+    num_people: 0,
+    security_system_state: "SYSTEM NOT ACTIVE"
   }; // Ovde čuvamo podatke sa Flask
 
 
   constructor(private iotService: IotService) { }
 
- ngOnInit(): void {
+  cameraUrl: string = "http://<raspberry_pi_ip>:8080/?action=stream";
+
+  handleImageError(event: any) {
+    // Ako kamera ne radi, postavi placeholder sliku
+    event.target.src = 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=640&auto=format&fit=crop';
+  }
+
+
+  ngOnInit(): void {
     this.statusSubscription = interval(5000).pipe(
       startWith(0),
       switchMap(() => this.iotService.getSystemStatus())
@@ -46,14 +55,17 @@ export class HomePage {
     }
   }
 
-  // 1. Slanje PIN koda (DMS)
-  sendPin(pin: string): void {
+  sendPin(inputElement: HTMLInputElement): void {
+    const pin = inputElement.value; // Uzimamo vrednost
+
     if (pin.length !== 4) {
       alert("PIN must be 4 digits!");
       return;
     }
+
+    inputElement.value = ""; // OVDE čistimo input
     this.iotService.sendDMSPassword(pin).subscribe({
-      next: (value: any) => {
+      next: () => {
         console.log("POSLATO");
       }
     });

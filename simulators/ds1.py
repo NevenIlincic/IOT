@@ -14,7 +14,7 @@ def generate_values(initial_state = DoorState.CLOSED, is_kitchen_button = True):
         if is_kitchen_button:
             x = random.randint(0, 30)
         elif last_state == DoorState.CLOSED:
-            x = random.randint(0,4)
+            x = random.randint(0,10)
         else:
             x = random.randint(-8, 2)
         if x <= 0:

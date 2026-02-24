@@ -23,7 +23,7 @@ section {
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 400px;
+    max-width: 300px;
     /* Centrirano i uniformisano */
 }
 
@@ -168,4 +168,16 @@ iframe {
 .active {
     color: #28a745;
     font-weight: bold;
+}
+
+.camera-panel {
+    text-align: center;
+}
+
+.video-wrapper img {
+    width: 75%;
+    height: 75%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #000; /* Crna pozadina dok se stream ne učita */
 }

@@ -25,7 +25,7 @@ def dms_callback(mqtt_client, settings, value, alarm: Alarm, security_system: Se
     else:
         success = Attempt.FAIL
         
-    value = "SYSTEM ACTIVATED" if security_system.value == State.ON else "SYSTEM DEACTIVATED"
+    value = "SYSTEM ACTIVE" if security_system.value == State.ON else "SYSTEM NOT ACTIVE"
     
     data_to_send = {
                     "name": settings["name"],
@@ -33,8 +33,8 @@ def dms_callback(mqtt_client, settings, value, alarm: Alarm, security_system: Se
                     "attempt": success.name,
                     "simulated": True,
                     "timestamp": time.time()
-                } 
-
+                }
+    
     mqtt_client.publish(settings["topic"], json.dumps(data_to_send))
     
 def run_dms(mqtt_client, alarm, security_system, settings, batch, data_lock, threads, stop_event):
