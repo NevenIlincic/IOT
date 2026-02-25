@@ -3,15 +3,17 @@ from enum import Enum
 from components.ds1 import run_ds
 import time
 from enums import DoorState
+import json
 
 class DS(object):
 
-    def __init__(self, ds_settings, batch, sd_settings=None):
+    def __init__(self, ds_settings, batch, sd_settings=None, mqtt_client=None):
         self.value = DoorState.CLOSED
         self.settings = ds_settings
         self.batch = batch
         self.PORT_BUTTON = ds_settings["pin"] #17
         self.sd_settings = sd_settings
+        self.mqtt_client = mqtt_client
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.PORT_BUTTON, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.add_event_detect(self.PORT_BUTTON, GPIO.BOTH, callback = self.button_pressed, bouncetime = 100)
@@ -22,10 +24,7 @@ class DS(object):
             if self.sd_settings is None:
                 self.value = DoorState.OPEN      # pritisnuto
             else:
-                if self.sd_settings["seconds"] > 0:
-                    self.sd_settings["seconds"] += 10
-                elif self.sd_settings["blinking"]:
-                    self.sd_settings["blinking"] = False
+                self.mqtt_client.publish("commands/btn", json.dumps({"action": "PRESSED"}))
         else:
             self.value = DoorState.CLOSED
        # self.value = DoorState.OPEN

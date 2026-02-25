@@ -46,6 +46,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("commands/dms")
     client.subscribe("commands/ds")
     client.subscribe("commands/alarm")
+    client.subscribe("commands/btn")
+    client.subscribe("commands/4sd")
 
 def on_message(client, userdata, msg):
     global alarm, security_system, system_status_storage
@@ -75,14 +77,12 @@ def on_message(client, userdata, msg):
             if settings["DMS"]["password"] == value:
                 if security_system.value == State.OFF:
                     if alarm.value == AlarmState.ACTIVE:
-                        system_status_storage["alarm_state"] = "ACTIVE"
                         alarm.turn_off()
                     else:
                         time.sleep(10)
                         security_system.value = State.ON
                 else:
                     if alarm.value == AlarmState.ACTIVE:
-                        system_status_storage["alarm_state"] = "NOT_ACTIVE"
                         alarm.turn_off()
                     security_system.value = State.OFF
             else:
@@ -127,10 +127,17 @@ def on_message(client, userdata, msg):
                 if value == "OPEN":
                     ds_settings["start_time"] = None
                     alarm.turn_on()
+                    
         case "commands/alarm":
             action = payload.get("action")
             if action == "ON":
                 alarm.turn_on()
+                
+        case "commands/btn":
+            data = {
+                "seconds_to_add": 10
+            }
+            client.publish("commands/add_to_kitchen_timer", json.dumps(data))
 
 def handle_devices_messages(payload):
     if type(payload) == list:

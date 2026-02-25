@@ -4,7 +4,7 @@ from simulators.dht import run_dht_simulator
 import threading
 import time
 
-def dht_callback(dht_settings, data_lock, batch, temperature, humidity, stop_event, dht_lcd_shared_dict ):
+def dht_callback(dht_settings, data_lock, batch, temperature, humidity, stop_event, dht_lcd_shared_dict):
     
     dht_lcd_shared_dict[dht_settings["name"]] = [temperature, humidity]
     

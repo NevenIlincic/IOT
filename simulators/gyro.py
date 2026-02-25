@@ -18,9 +18,9 @@ def generate_values():
             
         yield activity, rotation
 
-def run_gyro_simulator(gyro_settings, data_lock, batch, callback, stop_event, alarm):
+def run_gyro_simulator(mqtt_client, gyro_settings, data_lock, batch, callback, stop_event):
     for activity, rotation in generate_values():
-        callback(gyro_settings, data_lock, batch, rotation, activity, stop_event, alarm)
+        callback(mqtt_client, gyro_settings, data_lock, batch, rotation, activity, stop_event)
         
         time.sleep(gyro_settings["delay"])
         if stop_event.is_set():
