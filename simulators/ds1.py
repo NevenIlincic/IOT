@@ -23,9 +23,9 @@ def generate_values(initial_state = DoorState.CLOSED, is_kitchen_button = True):
             state = DoorState.CLOSED
         yield state
 
-def run_ds1_simulator(settings, data_lock, batch, stop_event, callback, alarm, security_system):
+def run_ds1_simulator(mqtt_client, settings, data_lock, batch, stop_event, callback):
     for state in generate_values(is_kitchen_button=settings["kitchen_button"]):
-        callback(settings, data_lock, batch, stop_event, state.name, alarm, security_system)
+        callback(mqtt_client, settings, data_lock, batch, stop_event, state.name)
         time.sleep(settings['delay'])
         if stop_event.is_set():
             break

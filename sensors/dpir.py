@@ -24,7 +24,7 @@ class DPIR(object):
         else:
             self.value = MotionDetected.NOT_DETECTED
 
-def run_dpir_loop(dpir: DPIR, dpir_settings, data_lock, batch, stop_event, callback, dl, dl_settings, dus_settings, dpir_dus_shared_dict, all_settings, alarm):
+def run_dpir_loop(mqtt_client, dpir: DPIR, dpir_settings, data_lock, batch, stop_event, callback, dl, dl_settings, dus_settings, dpir_dus_shared_dict, all_settings):
     while True:
-        callback(dpir_settings, dl, dl_settings, data_lock, batch, stop_event, dpir.value, dus_settings, dpir_dus_shared_dict, all_settings, alarm)
+        callback(mqtt_client, dpir_settings, dl, dl_settings, data_lock, batch, stop_event, dpir.value, dus_settings, dpir_dus_shared_dict, all_settings)
         time.sleep(dpir_settings["delay"])

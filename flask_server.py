@@ -4,6 +4,7 @@ import paho.mqtt.client as mqtt
 import threading
 import json
 from datetime import datetime, timezone
+import time
 
 from settings import load_settings
 from influxdb_client import InfluxDBClient, Point
@@ -13,6 +14,11 @@ from influxdb_client.client.write_api import WritePrecision
 import paho.mqtt.client as mqtt
 
 import paho.mqtt.subscribe as subscribe
+
+from classes.alarm import Alarm
+from classes.security_sistem import SecuritySystem
+
+from enums import Attempt, State, AlarmState
 
 influx_config = {
     "url": "http://localhost:8087", ##PROMENI NA IP UCIONICE
@@ -28,23 +34,111 @@ system_status_storage = {
     "security_system_state": "SYSTEM NOT ACTIVE"
 }
 
+alarm: Alarm = None
+security_system: SecuritySystem = None
+
+
 def on_connect(client, userdata, flags, rc):
     client.subscribe("devices")
     client.subscribe("people_in_system")
+    client.subscribe("commands/add_people")
+    client.subscribe("commands/subtract_people")
+    client.subscribe("commands/dms")
+    client.subscribe("commands/ds")
+    client.subscribe("commands/alarm")
 
 def on_message(client, userdata, msg):
+    global alarm, security_system, system_status_storage
     #print(msg.topic+" "+msg.payload.decode("utf-8"))
     topic = msg.topic
     payload = json.loads(msg.payload.decode("utf-8"))
     
+    settings = userdata.get("settings")
     
+    match topic:
+        case "devices":
+            handle_devices_messages(payload)
+        case "commands/subtract_people":
+            value = payload.get("subtract")
+            print(system_status_storage)
+            if system_status_storage["num_people"] != 0:
+                system_status_storage["num_people"] -= value
+            else:
+                alarm.turn_on()  
+        case "commands/add_people":
+            value = payload.get("add")
+            system_status_storage["num_people"] += value
+            print(system_status_storage)
+        case "commands/dms":
+            success = Attempt.SUCCESS
+            value = payload.get("password")
+            if settings["DMS"]["password"] == value:
+                if security_system.value == State.OFF:
+                    if alarm.value == AlarmState.ACTIVE:
+                        system_status_storage["alarm_state"] = "ACTIVE"
+                        alarm.turn_off()
+                    else:
+                        time.sleep(10)
+                        security_system.value = State.ON
+                else:
+                    if alarm.value == AlarmState.ACTIVE:
+                        system_status_storage["alarm_state"] = "NOT_ACTIVE"
+                        alarm.turn_off()
+                    security_system.value = State.OFF
+            else:
+                success = Attempt.FAIL
+                
+            value = "SYSTEM ACTIVE" if security_system.value == State.ON else "SYSTEM NOT ACTIVE"
+            
+            data_to_send = {
+                            "name": settings["DMS"]["name"],
+                            "value": value,
+                            "attempt": success.name,
+                            "simulated": True,
+                            "timestamp": time.time()
+                        }
+            
+            system_status_storage["security_system_state"] = value
+            
+            client.publish(settings["topic"], json.dumps(data_to_send))
+        case "commands/ds":
+            ds_settings = None
+            ds_name = payload.get("name")
+            if ds_name == "ds_1":
+                ds_settings = settings["DS1"]
+            else:
+                ds_settings = settings["DS2"]
+            
+            value = payload.get("ds_value")
+            if security_system.value == State.OFF:
+                if value == "CLOSED":
+                    if ds_settings["start_time"]:
+                        if alarm.value == AlarmState.ACTIVE and (time.time() - ds_settings["start_time"] > 5):
+                            alarm.turn_off()
+
+                    ds_settings["start_time"] = None
+                else:
+                    if ds_settings["start_time"] is None:
+                        ds_settings["start_time"] = time.time()
+                    else:
+                        if time.time() - ds_settings["start_time"] > 5:
+                            alarm.turn_on()
+            else:
+                if value == "OPEN":
+                    ds_settings["start_time"] = None
+                    alarm.turn_on()
+        case "commands/alarm":
+            action = payload.get("action")
+            if action == "ON":
+                alarm.turn_on()
+
+def handle_devices_messages(payload):
     if type(payload) == list:
         for single_data in payload:
             name = single_data["name"]
             
             match name:
                 case "dpir_1":
-                    print(single_data)
                     add_point("DPIR_1", single_data)
                 case "dpir_2":
                     add_point("DPIR_2", single_data)
@@ -57,10 +151,10 @@ def on_message(client, userdata, msg):
                     add_point("DUS_2", single_data)
                     
                 case "ds_1":
-                    print(single_data)
                     add_point("DS_1", single_data)
+                    
+                    
                 case "ds_2":
-                    print(single_data)
                     add_point("DS_2", single_data)
                 case "btn":
                     add_point("BTN", single_data)
@@ -69,11 +163,9 @@ def on_message(client, userdata, msg):
                     add_point("DL", single_data)
                 
                 case "db":
-                    print(single_data)
                     add_point("DB", single_data)
                 
                 case "lcd":
-                    print(single_data)
                     add_point("LCD", single_data)
                 case "dht_1":
                     add_point_dht("DHT_1", single_data)
@@ -93,11 +185,9 @@ def on_message(client, userdata, msg):
                     write_api.write(bucket="moj_bucket", record=point, org="moja_org")
                 
                 case "4sd":
-                    print(single_data)
                     add_point("4SD", single_data)
                     
                 case "people":
-                    print(single_data["num_people"])
                     system_status_storage["num_people"] = single_data["num_people"]
                     
     elif type(payload) == dict:
@@ -148,8 +238,7 @@ def on_message(client, userdata, msg):
                 .time(measurment_time)
             
                 write_api.write(bucket="moj_bucket", record=point, org="moja_org")
-                
-                
+             
 def add_point(measurment_name, data):
     measurment_time = datetime.fromtimestamp(data['timestamp'], tz=timezone.utc)
     point = Point(measurment_name) \
@@ -242,6 +331,10 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.on_message = on_message
     client.connect("localhost", 1883, 60) #PROMENI NA IP UCIONICE
+    
+    
+    alarm = Alarm(client, settings["ALARM"])
+    security_system = SecuritySystem()
 
     # client.loop_forever()
     client.loop_start() # Pokreće MQTT u pozadinskom thread-u

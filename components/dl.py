@@ -28,15 +28,15 @@ def dl_callback(settings, data_lock, batch, stop_event, value):
 def run_dl(dl, settings, batch, data_lock, threads, stop_event):
     if settings['simulated']:
         print("Starting dl simulator")
-        dl1_thread = threading.Thread(target = run_dl_simulator, args=(settings, data_lock, batch, stop_event, dl_callback), daemon=True)
-        dl1_thread.start()
-        threads.append(dl1_thread)
-        print("Dl simulator started")
+        # dl1_thread = threading.Thread(target = run_dl_simulator, args=(settings, data_lock, batch, stop_event, dl_callback), daemon=True)
+        # dl1_thread.start()
+        # threads.append(dl1_thread)
+        # print("Dl simulator started")
     else:
         from sensors.dl import run_dl_loop, DL
         print("Starting DL loop")
-        #dl = DB(settings, batch)
-        ds_thread = threading.Thread(target=run_dl_loop, args=(dl, settings, data_lock, batch, stop_event, dl_callback), daemon=True)
-        ds_thread.start()
-        threads.append(ds_thread)
-        print("DL loop started")
+        # #dl = DB(settings, batch)
+        # ds_thread = threading.Thread(target=run_dl_loop, args=(dl, settings, data_lock, batch, stop_event, dl_callback), daemon=True)
+        # ds_thread.start()
+        # threads.append(ds_thread)
+        # print("DL loop started")

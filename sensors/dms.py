@@ -2,13 +2,11 @@ import RPi.GPIO as GPIO
 import time
 
 class DMS(object):
-    def __init__(self, dms_settings, batch, data_lock, alarm, security_system, mqtt_client):
+    def __init__(self, dms_settings, batch, data_lock, mqtt_client):
         self.value = ""
         self.settings = dms_settings
         self.batch = batch
         self.data_lock = data_lock
-        self.alarm = alarm
-        self.security_system = security_system
         self.mqtt_client = mqtt_client
         
         self.R1 = dms_settings["R1"]

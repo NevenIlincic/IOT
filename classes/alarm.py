@@ -6,23 +6,17 @@ from components.db import db_callback
 
 
 class Alarm(object):
-    def __init__(self, mqtt_client, settings, db, db_settings, data_lock, batch, stop_event):
+    def __init__(self, mqtt_client, settings):
         self.value = AlarmState.NOT_ACTIVE
         self.mqtt_client = mqtt_client
         self.settings = settings
-        self.db = db
-        self.data_lock = data_lock
-        self.batch = batch
-        self.stop_event = stop_event
-        self.db_settings = db_settings
-        
-    
+
     def turn_off(self):
         print("ALARM ISKLJUCEN!")
-        if not self.db is None:
-            self.db.toggle_buzz(False)
-        else:
-            db_callback(self.db_settings, self.data_lock, self.batch, self.stop_event, Buzzing.STOPPED.name)
+        # if not self.db is None:
+        #     self.db.toggle_buzz(False)
+        # else:
+        #     db_callback(self.db_settings, self.data_lock, self.batch, self.stop_event, Buzzing.STOPPED.name)
         self.value = AlarmState.NOT_ACTIVE
         data_to_send = {
                     "name": self.settings["name"],
@@ -31,12 +25,15 @@ class Alarm(object):
                 } 
         self.mqtt_client.publish(self.settings["topic"], json.dumps(data_to_send))
     
+        #Salje komandu da se buzzer iskljuci
+        self.mqtt_client.publish("commands/buzzer", json.dumps({"action": "OFF"}))
+    
     def turn_on(self):
         print("ALARM UKLJUCEN!")
-        if not self.db is None:
-            self.db.toggle_buzz(True)
-        else:
-            db_callback(self.db_settings, self.data_lock, self.batch, self.stop_event, Buzzing.BUZZING.name)
+        # if not self.db is None:
+        #     self.db.toggle_buzz(True)
+        # else:
+        #     db_callback(self.db_settings, self.data_lock, self.batch, self.stop_event, Buzzing.BUZZING.name)
         self.value = AlarmState.ACTIVE
         data_to_send = {
                 "name": self.settings["name"],
@@ -44,3 +41,4 @@ class Alarm(object):
                 "timestamp": time.time()
             } 
         self.mqtt_client.publish(self.settings["topic"], json.dumps(data_to_send))
+        self.mqtt_client.publish("commands/buzzer", json.dumps({"action": "ON"}))

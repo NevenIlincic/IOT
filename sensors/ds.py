@@ -32,9 +32,9 @@ class DS(object):
     # def button_released(self, event):
     #     self.value = DoorState.CLOSED
 
-def run_ds_loop(ds, settings, data_lock, batch, stop_event, callback, alarm, security_system):
+def run_ds_loop(mqtt_client, ds, settings, data_lock, batch, stop_event, callback):
     while True:
-        callback(settings, data_lock, batch, stop_event, ds.value.name, alarm, security_system)
+        callback(mqtt_client, settings, data_lock, batch, stop_event, ds.value.name)
         time.sleep(settings["delay"])
     
     

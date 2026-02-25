@@ -6,8 +6,9 @@ import random
 from enum import Enum
 from enums import AlarmState
 from enums import State
+import json
 
-def ds_callback(settings, data_lock, batch, stop_event, value, alarm, security_system):
+def ds_callback(mqtt_client, settings, data_lock, batch, stop_event, value):
     payload = {
         "name": settings["name"],
         "value": value,
@@ -16,23 +17,25 @@ def ds_callback(settings, data_lock, batch, stop_event, value, alarm, security_s
     }
     
     if settings["name"] == "ds_1" or settings["name"] == "ds_2":
-        if security_system.value == State.OFF:
-            if value == "CLOSED":
-                if settings["start_time"]:
-                    if alarm.value == AlarmState.ACTIVE and (time.time() - settings["start_time"] > 5):
-                        alarm.turn_off()
+        mqtt_client.publish("commands/ds", json.dumps({"name": settings["name"], "ds_value": value}))
 
-                settings["start_time"] = None
-            else:
-                if settings["start_time"] is None:
-                    settings["start_time"] = time.time()
-                else:
-                    if time.time() - settings["start_time"] > 5:
-                        alarm.turn_on()
-        else:
-            if value == "OPEN":
-                settings["start_time"] = None
-                alarm.turn_on()
+        # if security_system.value == State.OFF:
+        #     if value == "CLOSED":
+        #         if settings["start_time"]:
+        #             if alarm.value == AlarmState.ACTIVE and (time.time() - settings["start_time"] > 5):
+        #                 alarm.turn_off()
+
+        #         settings["start_time"] = None
+        #     else:
+        #         if settings["start_time"] is None:
+        #             settings["start_time"] = time.time()
+        #         else:
+        #             if time.time() - settings["start_time"] > 5:
+        #                 alarm.turn_on()
+        # else:
+        #     if value == "OPEN":
+        #         settings["start_time"] = None
+        #         alarm.turn_on()
                 
     
     with data_lock:
@@ -52,10 +55,10 @@ def ds_callback(settings, data_lock, batch, stop_event, value, alarm, security_s
 
 
 
-def run_ds(settings, batch, data_lock, threads, stop_event, alarm, security_system, sd_settings=None):
+def run_ds(mqtt_client, settings, batch, data_lock, threads, stop_event, sd_settings=None):
         if settings['simulated']:
             print("Starting" + settings["name"] + " simulator")
-            ds1_thread = threading.Thread(target = run_ds1_simulator, args=(settings, data_lock, batch, stop_event, ds_callback, alarm, security_system), daemon=True)
+            ds1_thread = threading.Thread(target = run_ds1_simulator, args=(mqtt_client, settings, data_lock, batch, stop_event, ds_callback), daemon=True)
             ds1_thread.start()
             threads.append(ds1_thread)
             print(settings["name"] + " simulator started")
@@ -63,7 +66,7 @@ def run_ds(settings, batch, data_lock, threads, stop_event, alarm, security_syst
             from sensors.ds import run_ds_loop, DS
             print("Starting DS loop")
             ds = DS(settings, batch, sd_settings)
-            ds_thread = threading.Thread(target=run_ds_loop, args=(ds, settings, data_lock, batch, stop_event, ds_callback, alarm, security_system), daemon=True)
+            ds_thread = threading.Thread(target=run_ds_loop, args=(mqtt_client, ds, settings, data_lock, batch, stop_event, ds_callback), daemon=True)
             ds_thread.start()
             threads.append(ds_thread)
             print("DS loop started")
