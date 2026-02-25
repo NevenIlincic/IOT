@@ -15,9 +15,9 @@ def generate_values(initial_temp = 25, initial_humidity=20):
 
       
 
-def run_dht_simulator(dht_settings, data_lock, batch, callback, stop_event, dht_lcd_shared_dict):
+def run_dht_simulator(mqtt_client, dht_settings, data_lock, batch, callback, stop_event):
       for h, t in generate_values():
-            callback(dht_settings, data_lock, batch, t, h, stop_event, dht_lcd_shared_dict)
+            callback(mqtt_client, dht_settings, data_lock, batch, t, h, stop_event)
             time.sleep(dht_settings["delay"]) 
             if stop_event.is_set():
                   break

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class IotService {
-  private path: string = "http://localhost:5050"
+  private path: string = "http://localhost:5050" // Umesto localhost, staviti IP UCIONICE !!
 
   constructor(private httpClient: HttpClient) { }
 

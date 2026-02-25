@@ -6,6 +6,7 @@ from sensors.lcd.Adafruit_LCD1602 import Adafruit_CharLCD
 from time import sleep, strftime
 from datetime import datetime
  
+ 
 def get_cpu_temp():     # get CPU temperature and store it into file "/sys/class/thermal/thermal_zone0/temp"
     tmp = open('/sys/class/thermal/thermal_zone0/temp')
     cpu = tmp.read()
@@ -14,26 +15,19 @@ def get_cpu_temp():     # get CPU temperature and store it into file "/sys/class
  
 def get_time_now():     # get system time
     return datetime.now().strftime('    %H:%M:%S')
-    
-def run_lcd_loop(lcd_settings, callback, data_lock, batch, stop_event, dht_lcd_shared_dict):
+
+        
+def run_lcd_loop(lcd_settings, callback, data_lock, batch, stop_event, lcd_values_dict):
+    global temp_string, humidity_string
     mcp.output(3,1)     # turn on LCD backlight
     lcd.begin(16,2)     # set number of LCD lines and columns
     i = 0
     while(True):       
-        current_dht = "dht_" + str(i+1)
         #lcd.clear()
         lcd.setCursor(0,0)  # set cursor position
-        temp_string = ""
-        humidity_string = ""
-        if current_dht == "dht_1":    
-            temp_string = 'Bedroom T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
-            humidity_string = 'Bedroom H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
-        elif current_dht == "dht_2":
-            temp_string = 'Master T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
-            humidity_string = 'Master H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
-        else:
-            temp_string = 'Kitchen T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
-            humidity_string = 'Kitchen H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+        
+        temp_string = lcd_values_dict["temp_string"]
+        humidity_string = lcd_values_dict["humidity_string"]
         
         lcd.message(temp_string)
         lcd.message(humidity_string)

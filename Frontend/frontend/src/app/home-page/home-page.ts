@@ -28,7 +28,7 @@ export class HomePage {
 
   constructor(private iotService: IotService) { }
 
-  cameraUrl: string = "http://<raspberry_pi_ip>:8080/?action=stream";
+  cameraUrl: string = "http://<raspberry_pi_ip>:8080/?action=stream"; /// TREBA ZAMENITI SA IP PI
 
   handleImageError(event: any) {
     // Ako kamera ne radi, postavi placeholder sliku

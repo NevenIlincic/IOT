@@ -47,6 +47,7 @@ import time
 
 
 from components.db import db_callback
+from components.lcd import lcd_callback
 
 from enums import Buzzing
 
@@ -81,11 +82,9 @@ def run_sd_counter(settings, data_lock, batch, stop_event):
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT broker")
-    # client.subscribe("commands/buzzer")
-    # client.subscribe("commands/dms")
-    # client.subscribe("commands/rgb")
-    client.subscribe("commands/start_kitchen_timer")
-    client.subscribe("commands/add_to_kitchen_timer")
+    client.subscribe("commands/rgb")
+    client.subscribe("commands/lcd")
+
 
 def on_message(client, userdata, msg):
     try:
@@ -95,65 +94,25 @@ def on_message(client, userdata, msg):
         data_lock = userdata.get("data_lock")
         batch = userdata.get("batch")
         stop_event = userdata.get("stop_event")
-        db = userdata.get("db")
-        dl = userdata.get("dl")
-            
-        # elif msg.topic == "commands/dl":
-        #     action = payload.get("action")
-        #     if action == "ON":
-        #         if not dl is None:
-        #             dl.toggle_buzz(True)
-        #         else:
-        #             db_callback(settings["DB"], data_lock, batch, stop_event, Buzzing.BUZZING.name)
-        #     else:
-        #         if not db is None:
-        #             db.toggle_buzz(False)
-        #         else:
-        #             db_callback(settings["DB"], data_lock, batch, stop_event, Buzzing.STOPPED.name)
-            
+        lcd_value_dict = userdata.get("lcd_values_dict")
         
-        # if msg.topic == "commands/dms":
-        #     typed_password = payload.get("password")
+        
+        if msg.topic == "commands/lcd":
+            temperature_string = payload.get("temp_string")
+            humidity_string = payload.get("humidity_string")
+            lcd_callback(settings["LCD"], data_lock, batch, temperature_string, humidity_string, stop_event)
+            lcd_value_dict["temp_string"] = temperature_string
+            lcd_value_dict["humidity_string"] = humidity_string
             
-        #     alarm = userdata.get('alarm')
-        #     security_system = userdata.get('security_system')
-        #     dms_settings = userdata.get('settings')['DMS']
+        if msg.topic == "commands/rgb":
+            selected_number = payload.get("selected_number")
+            rgb = userdata.get("rgb")
             
-        #     # Sada pozivamo dms_callback koji se nalazi u tvojoj komponenti
-        #     from components.dms import dms_callback
-        #     print(f"Received DMS command from Flask. Password: {typed_password}")
+            # Sada pozivamo dms_callback koji se nalazi u tvojoj komponenti
+            from components.ir import ir_callback
+            print(f"Received RGB command from Flask. Selected number: {selected_number}")
             
-        #     dms_callback(client, dms_settings, typed_password, alarm, security_system)
-        # if msg.topic == "commands/rgb":
-        #     selected_number = payload.get("selected_number")
-            
-        #     alarm = userdata.get('alarm')
-        #     security_system = userdata.get('security_system')
-        #     dms_settings = userdata.get('settings')['DMS']
-        #     rgb = userdata.get("rgb")
-            
-        #     # Sada pozivamo dms_callback koji se nalazi u tvojoj komponenti
-        #     from components.ir import ir_callback
-        #     print(f"Received RGB command from Flask. Selected number: {selected_number}")
-            
-        #     ir_callback(client, settings["IR"], rgb, settings["RGB"], stop_event, selected_number)
-        if msg.topic == "commands/start_kitchen_timer":
-            total_seconds = payload.get("total_seconds")
-            
-            threads = userdata.get("threads")
-
-            settings["4SD"]["seconds"] = total_seconds         
-            sd_thread = threading.Thread(target = run_sd_counter, args=(settings, data_lock, batch, stop_event), daemon=True)
-            sd_thread.start()
-            threads.append(sd_thread)
-            
-        if msg.topic == "commands/add_to_kitchen_timer":
-            seconds_to_add = payload.get("seconds_to_add")
-            if settings["4SD"]["seconds"] > 0:
-                settings["4SD"]["seconds"] += seconds_to_add
-            elif settings["4SD"]["blinking"]:
-                settings["4SD"]["blinking"] = False
-                print("Stopped BLINKING")
+            ir_callback(client, settings["IR"], rgb, settings["RGB"], stop_event, selected_number)
         
     except Exception as e:
         print(f"Error in on_message: {e}")
@@ -187,13 +146,13 @@ if __name__ == "__main__":
         mqtt_client.connect("localhost", 1883, 60) #192.168.107.153
         mqtt_client.loop_start()
         
-        # dht1_settings = settings['DHT1']
-        # dht2_settings = settings['DHT2']
-        dht3_settings = settings['DHT3']
+        dht1_settings = settings['DHT1']
+        dht2_settings = settings['DHT2']
+        #dht3_settings = settings['DHT3']
         
         #ds1_settings = settings['DS1']
-        ds2_settings = settings['DS2']
-        btn_settings = settings["BTN"]
+        #ds2_settings = settings['DS2']
+        #btn_settings = settings["BTN"]
         
         alarm_settings = settings["ALARM"]
         
@@ -201,26 +160,26 @@ if __name__ == "__main__":
         dus2_settings = settings['DUS2']
         
         #dpir1_settings = settings['DPIR1']
-        dpir2_settings = settings['DPIR2']
-        # dpir3_settings = settings['DPIR3']
+        #dpir2_settings = settings['DPIR2']
+        dpir3_settings = settings['DPIR3']
         
         
         dl_settings = settings['DL']
        # dms_settings = settings['DMS']
       #  db_settings = settings["DB"]
         gyro_settings = settings["GYRO"]
-        # lcd_settings = settings["LCD"]
-        # ir_settings = settings["IR"]
-        # rgb_settings = settings["RGB"]
-        sd_settings = settings["4SD"]
+        lcd_settings = settings["LCD"]
+        ir_settings = settings["IR"]
+        rgb_settings = settings["RGB"]
+        #sd_settings = settings["4SD"]
         # run_dht(dht1_settings, threads, stop_event)
         
         
-        dht_lct_shared_dict = {
-            "dht_1": [20, 20],
-            "dht_2": [15,15],
-            "dht_3": [10,10]#1. Temperatura, 2. Humidity
+        lcd_values_dict= {
+            "temp_string": "t",
+            "humidity_string": "h"
         }
+        mqtt_userdata["lcd_values_dict"] = lcd_values_dict
         
         dpir_dus_shared_dict = {
             #"dus_1": [dus1_settings["start_distance"], dus1_settings["end_distance"], dus1_settings["last_distance"]],
@@ -238,10 +197,10 @@ if __name__ == "__main__":
         # if not dl_settings["simulated"]:
         #     from sensors.dl import DL
         #     dl = DL(dl_settings, batch)
-        # rgb = None
-        # if not settings["RGB"]["simulated"]:
-        #     from sensors.rgb import RGB
-        #     rgb = RGB(settings["RGB"])
+        rgb = None
+        if not settings["RGB"]["simulated"]:
+            from sensors.rgb import RGB
+            rgb = RGB(settings["RGB"])
         
         #alarm = Alarm(mqtt_client, alarm_settings, db, db_settings, data_lock, batch, stop_event)
         mqtt_userdata["db"] = db
@@ -250,23 +209,23 @@ if __name__ == "__main__":
         # mqtt_userdata["threads"] = threads
         
        # run_ds(mqtt_client, ds1_settings, batch, data_lock, threads, stop_event)
-        run_ds(mqtt_client, ds2_settings, batch, data_lock, threads, stop_event)
-        run_ds(mqtt_client, btn_settings, batch, data_lock, threads, stop_event, sd_settings)
+        #run_ds(mqtt_client, ds2_settings, batch, data_lock, threads, stop_event)
+        #run_ds(mqtt_client, btn_settings, batch, data_lock, threads, stop_event, sd_settings)
        # run_dus(dus1_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
-        run_dus(dus2_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
+       # run_dus(dus2_settings, threads, stop_event, batch, data_lock, dpir_dus_shared_dict)
        # run_dpir(mqtt_client, dpir1_settings, threads, stop_event, batch, data_lock, dl, dl_settings, dus1_settings, dpir_dus_shared_dict, settings) ## AKO NIJE SIMULIRAN UREDJAJ PROSLEDITI Pravi DL objekat !!!!
-        run_dpir(mqtt_client, dpir2_settings, threads, stop_event, batch, data_lock, None, dl_settings, dus2_settings, dpir_dus_shared_dict, settings)
-        #run_dpir(dpir3_settings, threads, stop_event, batch, data_lock, None, dl_settings, None, None, settings, alarm)
+       # run_dpir(mqtt_client, dpir2_settings, threads, stop_event, batch, data_lock, None, dl_settings, dus2_settings, dpir_dus_shared_dict, settings)
+        run_dpir(mqtt_client, dpir3_settings, threads, stop_event, batch, data_lock, None, dl_settings, None, None, settings)
        # run_db(db, db_settings, batch, data_lock, threads, stop_event)
         #run_dl(dl, dl_settings, batch, data_lock, threads, stop_event)
        # run_dms(mqtt_client, dms_settings, batch, data_lock, threads, stop_event)
-        # run_dht(dht1_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
-        # run_dht(dht2_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
-        run_dht(mqtt_client, dht3_settings, threads, stop_event, data_lock, batch)
+        run_dht(mqtt_client, dht1_settings, threads, stop_event, data_lock, batch)
+        run_dht(mqtt_client, dht2_settings, threads, stop_event, data_lock, batch)
+       # run_dht(dht3_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
         
-        run_gyro(mqtt_client, gyro_settings, threads, stop_event, data_lock, batch)
-        # run_lcd(lcd_settings, threads, stop_event, data_lock, batch, dht_lct_shared_dict)
-        # run_ir(mqtt_client, ir_settings, threads, stop_event, rgb, rgb_settings)
+        #run_gyro(mqtt_client, gyro_settings, threads, stop_event, data_lock, batch)
+        run_lcd(lcd_settings, threads, stop_event, data_lock, batch, lcd_values_dict)
+        run_ir(mqtt_client, ir_settings, threads, stop_event, rgb, rgb_settings)
         
         
         batch_thread =  threading.Thread(target=fill_batch, args=(mqtt_client, batch, data_lock, settings))

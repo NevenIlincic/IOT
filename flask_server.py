@@ -37,6 +37,12 @@ system_status_storage = {
 alarm: Alarm = None
 security_system: SecuritySystem = None
 
+dht_lcd_shared_dict = {
+    "dht_1": [20,20], # 1. Temperature, 2. Vlaznost
+    "dht_2": [15,15],
+    "dht_3": [10,10]
+}
+
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("devices")
@@ -48,9 +54,10 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("commands/alarm")
     client.subscribe("commands/btn")
     client.subscribe("commands/4sd")
+    client.subscribe("commands/dht")
 
 def on_message(client, userdata, msg):
-    global alarm, security_system, system_status_storage
+    global alarm, security_system, system_status_storage, dht_lcd_shared_dict
     #print(msg.topic+" "+msg.payload.decode("utf-8"))
     topic = msg.topic
     payload = json.loads(msg.payload.decode("utf-8"))
@@ -138,6 +145,12 @@ def on_message(client, userdata, msg):
                 "seconds_to_add": 10
             }
             client.publish("commands/add_to_kitchen_timer", json.dumps(data))
+        
+        case "commands/dht":
+            name = payload.get("name")
+            temperature_and_humidity = payload.get("values")
+            dht_lcd_shared_dict[name] = temperature_and_humidity
+            
 
 def handle_devices_messages(payload):
     if type(payload) == list:
@@ -322,6 +335,30 @@ def handle_system_status(): # Promenjeno ime ovde
         return jsonify({"status": "error", "message": str(e)})
 
 
+def run_lcd_thread(mqtt_client, lcd_settings):
+    i = 0
+    while True:
+        current_dht = "dht_"+ str(i + 1)
+        temp_string = ""
+        humidity_string = ""
+        if current_dht == "dht_1":    
+            temp_string = 'Bedroom T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Bedroom H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+        elif current_dht == "dht_2":
+            temp_string = 'Master T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Master H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+        else:
+            temp_string = 'Kitchen T: ' + str(dht_lcd_shared_dict[current_dht][0])+ "°C"'\n'
+            humidity_string = 'Kitchen H: ' + str(dht_lcd_shared_dict[current_dht][1])+ "%" 
+            
+        data = {
+            "temp_string": temp_string,
+            "humidity_string": humidity_string
+        }
+        mqtt_client.publish("commands/lcd", json.dumps(data))
+        time.sleep(lcd_settings["delay"]) 
+        i = (i+1) % 3
+
 if __name__ == "__main__":
     print("FLASK POKRENUT...")
     settings = load_settings()
@@ -346,4 +383,8 @@ if __name__ == "__main__":
     # client.loop_forever()
     client.loop_start() # Pokreće MQTT u pozadinskom thread-u
     
+    lcd_thread_thread = threading.Thread(target=run_lcd_thread, args=(client, settings["LCD"]), daemon=True)
+    lcd_thread_thread.start()
+    
     app.run(host="0.0.0.0", port=5050, debug=False)
+    

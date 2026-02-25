@@ -165,7 +165,7 @@
     "LCD": {
         "simulated": true,
         "name": "lcd",
-        "delay": 4
+        "delay": 5
     },
 
     "4SD": {

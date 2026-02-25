@@ -21,17 +21,17 @@ def lcd_callback(lcd_settings, data_lock, batch, temperature, humidity, stop_eve
 
 
 
-def run_lcd(settings, threads, stop_event, data_lock, batch, dht_lcd_shared_dict):
+def run_lcd(settings, threads, stop_event, data_lock, batch, lcd_values_dict):
         if settings['simulated']:
             print("Starting LCD sumilator")
-            gyro_thread = threading.Thread(target = run_lcd_simulator, args=(settings, data_lock, batch, lcd_callback, stop_event, dht_lcd_shared_dict), daemon=True)
-            gyro_thread.start()
-            threads.append(gyro_thread)
-            print("LCD sumilator started")
+            # gyro_thread = threading.Thread(target = run_lcd_simulator, args=(settings, data_lock, batch, lcd_callback, stop_event), daemon=True)
+            # gyro_thread.start()
+            # threads.append(gyro_thread)
+            # print("LCD sumilator started")
         else:
             from sensors.lcd.LCD1602 import run_lcd_loop
             print("Starting LCD loop")
-            dht1_thread = threading.Thread(target=run_lcd_loop, args=(settings, lcd_callback, data_lock, batch, stop_event, dht_lcd_shared_dict))
+            dht1_thread = threading.Thread(target=run_lcd_loop, args=(settings, lcd_callback, data_lock, batch, stop_event, lcd_values_dict), daemon=True)
             dht1_thread.start()
             threads.append(dht1_thread)
             print("LCD loop started")
